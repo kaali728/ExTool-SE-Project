@@ -304,10 +304,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@findnlink/neuro-ui@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.4.tgz#741923da6b0d86bb1105ea5da243c8b5e532fefc"
-  integrity sha512-4uNNMS1EzDnQhc7DAJKmLhppBGosU2jI9J6qE5SmASldziMFzaRx5LVjVVdv4Z7fghAgJ+DMVk9DGNW8L9QY3A==
+"@findnlink/neuro-ui@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.7.tgz#df754fa41cca1d869694a81c413a2fd7c2fa2ca8"
+  integrity sha512-NpQfLY9/3bb1TkgKjNSgubRwqqPmsPyHFdxlHiP4brWNcAgUKuqkCkYdZjJy/KaMFXyOS4mDF4Dm3O944Svftw==
   dependencies:
     "@mdx-js/mdx" "^1.6.22"
     "@mdx-js/react" "^1.6.22"

@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@findnlink/neuro-ui": "^1.0.4",
+    "@findnlink/neuro-ui": "^1.0.7",
     "@reduxjs/toolkit": "^1.8.1",
     "appwrite": "^7.0.0",
     "connected-react-router": "^6.9.2",
