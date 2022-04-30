@@ -1,0 +1,16 @@
+.left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 100px;
+    width: 300px;
+}
+
+.right {
+    background-color: #fbb519;
+}
+
+.gridWrapper {
+    min-height: 100vh;
+}
