@@ -15,6 +15,7 @@ import authSlice from './slices/auth/authSlice'
 // firebase
 import { firebaseConfig } from './firebase'
 import { FirebaseAppProvider } from 'reactfire'
+import { BrowserRouter } from 'react-router-dom'
 
 export const store = configureStore({
     reducer: {
@@ -28,14 +29,18 @@ export const useSelector = reduxUseSelector
 export const useDispatch = reduxUseDispatch
 export const Provider = ReduxProvider
 
+console.log(firebaseConfig)
+
 //TODO:Connected react router funktioniert nicht
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <Provider store={store}>
-            <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-                <App />
-            </FirebaseAppProvider>
-        </Provider>
+        <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+            <Provider store={store}>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </Provider>
+        </FirebaseAppProvider>
     </React.StrictMode>
 )

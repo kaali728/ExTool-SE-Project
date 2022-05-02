@@ -1,6 +1,6 @@
-import firebase from '@firebase/app'
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 import 'firebase/firestore'
-import 'firebase/auth'
 
 export const firebaseConfig = {
     apiKey: import.meta.env.VITE_APP_FIREBASE_APIKEY,
@@ -12,7 +12,7 @@ export const firebaseConfig = {
     measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID,
 }
 
-app = firebase.initializeApp(firebaseConfig)
+let app = initializeApp(firebaseConfig)
 
-export const auth = app.auth()
+export const auth = getAuth(app)
 export default app

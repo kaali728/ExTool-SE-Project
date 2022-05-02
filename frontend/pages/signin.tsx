@@ -2,10 +2,26 @@ import React, { useState } from "react";
 import { Grid, Flex, Input, Text, Button, Spacer } from "@findnlink/neuro-ui";
 import Lottie from "react-lottie-player";
 import lottieJson from "../public/assets/login_lottie.json";
-import scss from "../styles/auth/Login.module.scss";
+import scss from "../styles/auth/Auth.module.scss";
+import { useRouter } from "next/router";
+import { auth, signInWithEmailAndPassword } from "../lib/firebase";
 
 function signin() {
+  const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
+
+  const signinToApp = (e) => {
+    e.preventDefault();
+
+    signInWithEmailAndPassword(auth, form.email, form.password)
+      .then((userAuth) => {
+        console.log(userAuth);
+        router.push("/");
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
 
   return (
     <Grid _class={scss.gridWrapper}>
@@ -25,9 +41,10 @@ function signin() {
             }}
             placeholder="Your Email"
           />
+          <Spacer margin="xs" />
           <Input
             placeholder="Your Password"
-            // type="password"
+            type="password"
             value={form.password}
             onChange={(e) => {
               setForm((prev) => ({
@@ -36,15 +53,22 @@ function signin() {
               }));
             }}
           />
+          <Spacer margin="xs" />
           <Text
             pointer
             style={{ textAlign: "right", width: "100%" }}
-            onClick={() => console.log("Reset password")}
+            onClick={() => router.push("/forgetpassword")}
             margin="m"
           >
             Forget password?
           </Text>
-          <Button padding="s xl" margin="l m" primary scale="l">
+          <Button
+            padding="s xl"
+            margin="l m"
+            primary
+            scale="l"
+            onClick={signinToApp}
+          >
             Login
           </Button>
           <Text>
@@ -53,7 +77,7 @@ function signin() {
               pointer
               weight="bold"
               color={"--primary"}
-              onClick={() => navigate("/signup")}
+              onClick={() => router.push("/signup")}
               style={{ textAlign: "center" }}
             >
               Create Account
