@@ -1,0 +1,28 @@
+.left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 100px;
+    width: 300px;
+}
+
+.right {
+    background-color: #fbb519;
+}
+
+.gridWrapper {
+    --min: 15ch;
+    --gap: 1rem;
+    display: grid;
+    grid-gap: var(--gap);
+    width: 100%;
+    grid-template-columns: repeat(auto-fit,minmax(min(100%,var(--min)),1fr));
+    min-height: 100vh;
+}
+
+.forgetPasswordInput{
+    align-items: center;
+    align-self: center;
+    width: 300px !important;
+}

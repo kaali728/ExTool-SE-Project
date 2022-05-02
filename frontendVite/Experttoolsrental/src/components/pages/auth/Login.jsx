@@ -41,7 +41,7 @@ function Login() {
                     <Text
                         pointer
                         style={{ textAlign: 'right', width: '100%' }}
-                        onClick={() => console.log('Reset password')}
+                        onClick={() => navigate('/forgetPassword')}
                         margin="m"
                     >
                         Forget password?

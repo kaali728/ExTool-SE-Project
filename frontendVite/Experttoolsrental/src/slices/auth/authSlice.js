@@ -1,60 +1,117 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { appwrite } from '../../utility/appwrite'
+import { createSlice } from '@reduxjs/toolkit'
+import { auth } from '../../firebase'
 
-const login = createAsyncThunk('auth/login', async (email, password) => {
-    try {
-        await appwrite.account.createSession(email, password)
-        // If all is successful then get the userdata.
-        this.getUserdata()
-    } catch (err) {
-        console.error(err)
-    }
-})
-
-const getUserdata = createAsyncThunk('auth/getuser', async () => {
-    try {
-        const response = await appwrite.account.get()
-    } catch (err) {
-        if (err.toString() === 'Error: Unauthorized') return
-        console.error(err)
-    }
-})
-
-const register = createAsyncThunk('auth/register', async (email, password) => {
-    try {
-        await appwrite.account.create(email, password)
-    } catch (err) {
-        console.error(err) // also console error for debugging purposes.
-    }
-})
-
-const logout = createAsyncThunk('auth/logout', async () => {
-    await this.setState({ userprofile: false }) // Remove the local copy of the userprofile causing the app to see that the user is not logged in.
-    appwrite.account.deleteSession('current') // Tell appwrite server to remove current session and complete the logout.
-})
-
-export const authSlice = createSlice({
-    name: 'authState',
+export const slice = createSlice({
+    name: 'auth',
     initialState: {
-        user: null,
-        isError: false,
+        userData: null,
+        initialized: false,
     },
     reducers: {
-        setError: (state, action) => {
-            console.log(state.isError)
-            state.isError = action.payload
+        SET_INITIALIZED: (state, { payload }) => {
+            state.initialized = payload
+        },
+        LOGIN: (state, { payload }) => {
+            state.userData = payload.user
+        },
+        CREATE_USER: (state, { payload }) => {
+            state.userData = payload.user
+        },
+        LOGOUT: (state, action) => {
+            state.userData = null
+        },
+        SET_USER_DATA: (state, { payload }) => {
+            state.userData = { ...state.userData, ...payload.userData }
         },
     },
-    extraReducers: (builder) => {},
 })
 
-/* builder.addCase(login.fulfilled, (state, action) => {
-    state.user = action.payload
-}),
-builder.addCase(login.rejected, (state, action) => {
-    state.isError = action.payload
-}) */
+export const { SET_INITIALIZED, LOGIN, LOGOUT, SET_USER_DATA, CREATE_USER } =
+    slice.actions
 
-export const { setErrorTrue } = authSlice.actions
+export const setAuthListener = () => (dispatch, state) => {
+    auth.onAuthStateChanged((user) => {
+        if (user && !state().userAuth.initialized) {
+            dispatch(LOGIN({ user: auth.currentUser.toJSON() }))
+            dispatch(getUser())
+        }
 
-export default authSlice.reducer
+        !state().userAuth.initialized && dispatch(SET_INITIALIZED(true))
+    })
+}
+
+export const login =
+    ({ email, password }) =>
+    async (dispatch, state) => {
+        await auth.signInWithEmailAndPassword(email, password)
+
+        dispatch(LOGIN({ user: auth.currentUser.toJSON() }))
+        dispatch(getUser())
+
+        return state().userAuth.userData
+    }
+
+/**
+ *
+ */
+export const logOut = () => async (dispatch, state) => {
+    await auth.signOut()
+    dispatch(LOGOUT())
+}
+
+/**
+ *
+ */
+export const getUser = () => async (dispatch, state) => {
+    let userData = null
+    const uid = auth.currentUser.uid
+
+    // query user data
+    const resp = await auth.firestore().collection('users').doc(uid).get()
+    if (resp.exists) {
+        userData = {
+            id: resp.id,
+            ...resp.data(),
+        }
+    }
+
+    // update store
+    dispatch(SET_USER_DATA({ userData }))
+    return state().userAuth.userData
+}
+
+/**
+ *
+ */
+export const createUser =
+    ({ email, password }) =>
+    async (dispatch, state) => {
+        // create auth user
+        const resp = await auth
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+
+        // add user to user collection
+        const uid = auth.currentUser.uid
+        await auth.firestore().collection('users').doc(uid).set({
+            id: uid,
+            email: resp.user.email,
+        })
+
+        // update store
+        dispatch(CREATE_USER({ user: auth.currentUser.toJSON() }))
+        const userData = {
+            ...auth.currentUser.toJSON(),
+            id: uid,
+            email: resp.user.email,
+        }
+        dispatch(SET_USER_DATA({ userData }))
+    }
+
+// The function below is called a selector and allows us to select a value from
+// the state.
+export const selectUser = (state) => {
+    return state.userAuth.userData
+}
+
+export default slice.reducer
