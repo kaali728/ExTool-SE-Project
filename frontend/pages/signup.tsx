@@ -10,6 +10,7 @@ import {
   updateProfile,
 } from "../lib/firebase";
 import toast from "react-hot-toast";
+import { login } from "../lib/slices/userSlice";
 
 function signup() {
   const router = useRouter();
@@ -36,6 +37,11 @@ function signup() {
         })
           .then((user) => {
             console.log("UPDATED USER", user);
+            login({
+              email: userAuth.user.email,
+              uid: userAuth.user.uid,
+              displayName: name,
+            });
             router.push("/");
           })
           .catch((error) => {

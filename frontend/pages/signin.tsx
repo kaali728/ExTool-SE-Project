@@ -5,10 +5,13 @@ import lottieJson from "../public/assets/login_lottie.json";
 import scss from "../styles/auth/Auth.module.scss";
 import { useRouter } from "next/router";
 import { auth, signInWithEmailAndPassword } from "../lib/firebase";
+import { useDispatch } from "react-redux";
+import { login } from "../lib/slices/userSlice";
 
 function signin() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
 
   const signinToApp = (e) => {
     e.preventDefault();
@@ -16,6 +19,14 @@ function signin() {
     signInWithEmailAndPassword(auth, form.email, form.password)
       .then((userAuth) => {
         console.log(userAuth);
+        dispatch(
+          login({
+            email: userAuth.user.email,
+            uid: userAuth.user.uid,
+            displayName: userAuth.user.displayName,
+            photoUrl: userAuth.user.photoURL,
+          })
+        );
         router.push("/");
       })
       .catch((err) => {
