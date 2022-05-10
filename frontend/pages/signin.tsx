@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { auth, signInWithEmailAndPassword } from "../lib/firebase";
 import { useDispatch } from "react-redux";
 import { login } from "../lib/slices/userSlice";
+import { DASHBOARD, PASSWORD_FORGET, SIGNUP } from "../lib/constants/routes";
 
 function signin() {
   const router = useRouter();
@@ -27,7 +28,7 @@ function signin() {
             photoUrl: userAuth.user.photoURL,
           })
         );
-        router.push("/");
+        router.push(DASHBOARD);
       })
       .catch((err) => {
         alert(err);
@@ -68,7 +69,7 @@ function signin() {
           <Text
             pointer
             style={{ textAlign: "right", width: "100%" }}
-            onClick={() => router.push("/forgetpassword")}
+            onClick={() => router.push(PASSWORD_FORGET)}
             margin="m"
           >
             Forget password?
@@ -88,7 +89,7 @@ function signin() {
               pointer
               weight="bold"
               color={"--primary"}
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push(SIGNUP)}
               style={{ textAlign: "center" }}
             >
               Create Account

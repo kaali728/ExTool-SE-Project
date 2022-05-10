@@ -1,6 +1,8 @@
 import { onAuthStateChanged } from "firebase/auth";
+import Router from "next/router";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { DASHBOARD } from "../lib/constants/routes";
 import { auth } from "../lib/firebase";
 import { login, logout } from "../lib/slices/userSlice";
 
@@ -19,6 +21,7 @@ export default function AppWrapper(props: any) {
             photoUrl: userAuth.photoURL,
           })
         );
+        Router.push(DASHBOARD);
       } else {
         dispatch(logout());
       }

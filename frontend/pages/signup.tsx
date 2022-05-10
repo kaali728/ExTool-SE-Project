@@ -11,6 +11,7 @@ import {
 } from "../lib/firebase";
 import toast from "react-hot-toast";
 import { login } from "../lib/slices/userSlice";
+import { DASHBOARD, SIGNIN } from "../lib/constants/routes";
 
 function signup() {
   const router = useRouter();
@@ -42,7 +43,7 @@ function signup() {
               uid: userAuth.user.uid,
               displayName: name,
             });
-            router.push("/");
+            router.push(DASHBOARD);
           })
           .catch((error) => {
             console.log("user not updated");
@@ -123,7 +124,7 @@ function signup() {
               weight="bold"
               color={"--primary"}
               style={{ textAlign: "center" }}
-              onClick={() => router.push("/signin")}
+              onClick={() => router.push(SIGNIN)}
             >
               Login
             </Text>
