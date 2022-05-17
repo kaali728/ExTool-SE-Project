@@ -1,0 +1,25 @@
+.sideMenu{
+    background-color: var(--bg300);
+    padding: 20px 20px 0 20px;
+    .tab{
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        svg{
+            margin-right: 25px;
+        }
+    }
+    .logoutWrapper{
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 30px;
+        border-radius: var(--borderRadius);
+        transition: var(--transition);
+        color: var(--text200);
+        padding: 10px 20px;
+        cursor: pointer;
+        &:hover{
+            background-color: var(--bg100);
+        }
+    }
+}

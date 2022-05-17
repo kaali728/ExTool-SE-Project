@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@findnlink/neuro-ui": "^1.0.11",
+    "@findnlink/neuro-ui": "^1.0.20",
     "@reduxjs/toolkit": "^1.8.1",
     "firebase": "^9.7.0",
+    "install": "^0.13.0",
     "next": "12.1.5",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-hot-toast": "^2.2.0",
+    "react-icons": "^4.3.1",
     "react-lottie-player": "^1.4.2",
     "react-redux": "^8.0.1",
     "sass": "^1.51.0"

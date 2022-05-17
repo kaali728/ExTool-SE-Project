@@ -25,11 +25,8 @@ function signup() {
   const register = (e) => {
     e.preventDefault();
     if (!form.name) {
-      return alert("Please enter a full name");
+      return toast.error("Please enter a full name");
     }
-
-    console.log("register the user");
-
     createUserWithEmailAndPassword(auth, form.email, form.password)
       .then((userAuth) => {
         toast.success("Successfully registered!");

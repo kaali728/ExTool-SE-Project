@@ -21,7 +21,7 @@ export default function AppWrapper(props: any) {
             photoUrl: userAuth.photoURL,
           })
         );
-        Router.push(DASHBOARD);
+        //Router.push(DASHBOARD);
       } else {
         dispatch(logout());
       }
