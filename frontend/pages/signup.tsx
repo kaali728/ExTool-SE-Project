@@ -130,12 +130,13 @@ function signup() {
       </Flex>
       <Flex alignItems="center" justifyContent="center" _class={scss.right}>
         <Text
-          style={{ fontSize: 40, textAlign: "center" }}
+          style={{ fontSize: 50, textAlign: "center" }}
           weight="bold"
           color={"--text100"}
           margin="m xl"
         >
-          Just one step away from your new expert tool
+          {/* Just one step away from your new expert tool */}
+          Staff Register
         </Text>
         <Lottie
           loop

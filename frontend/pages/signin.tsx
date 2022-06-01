@@ -99,11 +99,12 @@ function signin() {
       </Flex>
       <Flex alignItems="center" justifyContent="center" _class={scss.right}>
         <Text
-          style={{ fontSize: 40, textAlign: "center" }}
+          style={{ fontSize: 50, textAlign: "center" }}
           weight="bold"
           color={"--text100"}
         >
-          The Best Way To Manage Your Assets
+          {/* The Best Way To Manage Your Assets */}
+          Staff Login
         </Text>
         <Lottie
           loop
