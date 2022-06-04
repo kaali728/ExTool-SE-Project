@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@findnlink/neuro-ui": "^1.0.20",
+    "@findnlink/neuro-ui": "^1.0.27",
     "@reduxjs/toolkit": "^1.8.1",
+    "@types/uuid": "^8.3.4",
     "firebase": "^9.7.0",
     "install": "^0.13.0",
     "next": "12.1.5",
@@ -20,7 +21,8 @@
     "react-icons": "^4.3.1",
     "react-lottie-player": "^1.4.2",
     "react-redux": "^8.0.1",
-    "sass": "^1.51.0"
+    "sass": "^1.51.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/node": "17.0.30",

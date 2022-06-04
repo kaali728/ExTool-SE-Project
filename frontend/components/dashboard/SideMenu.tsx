@@ -1,4 +1,11 @@
-import { Flex, Line, Tab, Tabs, TabsHeader } from "@findnlink/neuro-ui";
+import {
+  Flex,
+  Line,
+  Navigation,
+  Tab,
+  Tabs,
+  TabsHeader,
+} from "@findnlink/neuro-ui";
 import Image from "next/image";
 import React from "react";
 import styles from "./Dashboard.module.scss";
@@ -11,9 +18,11 @@ import { auth, signOut } from "../../lib/firebase";
 import toast from "react-hot-toast";
 import { logout } from "../../lib/slices/userSlice";
 
-type Props = {};
+type Props = {
+  setSelectedTab: any;
+};
 
-function SideMenu({}: Props) {
+function SideMenu({ setSelectedTab }: Props) {
   const dispatch = useDispatch();
 
   const signinOut = () => {
@@ -27,42 +36,38 @@ function SideMenu({}: Props) {
       });
   };
 
+  //TODO: Hier fix machen
+
   return (
-    <Flex
-      className={styles.sideMenu}
-      flex="1"
-      alignItems="center"
-      flexDirection="column"
-    >
-      <Image src={Logo} />
-      <Tabs direction="column" id="navigation" hover scale={"l"} margin={"xl"}>
-        <TabsHeader>
-          <Tab index={0}>
+    <Navigation type="side" _class={styles.sideMenu}>
+      <Tabs direction="column" id="navigation" hover>
+        <TabsHeader padding="xl">
+          <Tab index={0} onClick={() => setSelectedTab(0)}>
             <span className={styles.tab}>
               <FiGrid />
               Assets
             </span>
           </Tab>
-          <Tab index={1}>
+          <Tab index={1} onClick={() => setSelectedTab(1)}>
             <span className={styles.tab}>
               <GoLocation />
               Deliveries
             </span>
           </Tab>
-          <Tab index={2}>
+          <Tab index={2} onClick={() => setSelectedTab(2)}>
             <span className={styles.tab}>
               <GoTools />
               Repairs
             </span>
           </Tab>
-          <Tab index={3}>
+          <Tab index={3} onClick={() => setSelectedTab(3)}>
             <span className={styles.tab}>
               <FaFileInvoiceDollar />
               Invoices
             </span>
           </Tab>
           <Line margin={"xl"} />
-          <Tab>
+          <Tab index={4} onClick={() => setSelectedTab(4)}>
             <span className={styles.tab}>
               <FiSettings />
               Settings
@@ -70,13 +75,15 @@ function SideMenu({}: Props) {
           </Tab>
         </TabsHeader>
       </Tabs>
-      <div className={styles.logoutWrapper} onClick={signinOut}>
-        <span className={styles.tab}>
-          <FiLogOut />
-          Logout
-        </span>
-      </div>
-    </Flex>
+      <Flex alignItems="center">
+        <div className={styles.logoutWrapper} onClick={signinOut}>
+          <span className={styles.tab}>
+            <FiLogOut />
+            Logout
+          </span>
+        </div>
+      </Flex>
+    </Navigation>
   );
 }
 

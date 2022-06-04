@@ -228,10 +228,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@findnlink/neuro-ui@^1.0.20":
-  version "1.0.25"
-  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.25.tgz#a5b20e61363755c91649e220ebd77932b9b3011e"
-  integrity sha512-pGh3zJSvbvNRBY8IUeLGoch9tdFVjiL334kE2TJSIcTrtLfijQxfC0c1WbdnS0tgX0XXz2pRLc+sveNyahr1uQ==
+"@findnlink/neuro-ui@^1.0.27":
+  version "1.0.27"
+  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.27.tgz#d17401b614322b47612e3dcda59404cecaa4e84d"
+  integrity sha512-zEQMjzi+CBkf8k1tRtaRgy8wQKnr81n3snnMkZjWrgOOo+LmNFUeq6qBrk3YjgDnGVpYwJ7ksFvArsxyw9q7kg==
   dependencies:
     "@mdx-js/mdx" "1.6.22"
     "@mdx-js/react" "1.6.22"
@@ -957,6 +957,11 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz#b6725d5f4af24ace33b36fafd295136e75509f43"
   integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
+
+"@types/uuid@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
+  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 "@typescript-eslint/parser@5.10.1":
   version "5.10.1"
@@ -3364,6 +3369,11 @@ util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
+
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"

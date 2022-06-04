@@ -3,6 +3,7 @@
     font-family: Poppins, sans-serif;
 }
 
+
 //Variables
 :root {
     --black: black;
@@ -29,8 +30,8 @@
     --secondary70: #6d6e7170;
     --secondary20: #6d6e7120;
 
-    // Tag Background: --primary but 10% lighter
-    --tagBg: #6051e6;
+    // Tag Background: --primary but 10% lighter (https://www.cssfontstack.com/oldsites/hexcolortool/)
+    --tagBg: #C88200;
 
     // Shadow
     --dropShadow: 0px 3px 5px 0px #00000020;
@@ -73,6 +74,12 @@
     // Transition
     --transition: all 0.2s ease-in-out;
 
+    // Navbar
+    --navbarHeight: 65px;
+
+    // Mobile Menu Sidebar height
+    --mobileMenuButtonHeight: 50px;
+
     // Media Query
     --mobile: (max-width: 640px);
     --tablet: (max-width: 768px);
@@ -95,7 +102,7 @@
     --bg300: #f7f7f7;
 
     // --primary but 10% lighter
-    --tagBg: #9384ff;
+    --tagBg: #E29C00;
 
     // Shadow
     --dropShadow: 0px 2px 5px 0px #00000020;
@@ -295,4 +302,15 @@ h4 {
 h5 {
     font-size: var(--fontS);
     color: var(--text200);
+}
+
+
+body {
+  overflow: hidden !important;
+  margin: 0;
+}
+
+hr {
+  border-color: var(--text400);
+  margin: 0;
 }

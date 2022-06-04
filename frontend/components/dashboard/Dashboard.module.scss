@@ -1,6 +1,5 @@
 .sideMenu{
     background-color: var(--bg300);
-    padding: 20px 20px 0 20px;
     .tab{
         display: flex !important;
         align-items: center !important;
@@ -21,5 +20,20 @@
         &:hover{
             background-color: var(--bg100);
         }
+    }
+}
+
+.addAssets{
+    .assetModal{
+        div:nth-of-type(1){
+            width: 100% !important;
+        } 
+    }
+}
+
+.assetsGrid{
+    --min: 30ch!important;
+    img{
+        background-color: var(--bg200)!important;
     }
 }
