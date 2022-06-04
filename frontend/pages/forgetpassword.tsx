@@ -4,6 +4,7 @@ import scss from "../styles/auth/Auth.module.scss";
 import { useRouter } from "next/router";
 import { auth, sendPasswordResetEmail } from "../lib/firebase";
 import toast from "react-hot-toast";
+import { SIGNUP } from "../lib/constants/routes";
 
 function ForgetPassword() {
   const router = useRouter();
@@ -54,7 +55,7 @@ function ForgetPassword() {
             pointer
             weight="bold"
             color={"--primary"}
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push(SIGNUP)}
             style={{ textAlign: "center" }}
           >
             Create Account

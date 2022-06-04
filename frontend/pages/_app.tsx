@@ -2,27 +2,18 @@ import "../styles/globals.scss";
 import "@findnlink/neuro-ui/lib/style.css";
 import type { AppProps } from "next/app";
 import { Toaster } from "react-hot-toast";
-import { useUserData } from "../lib/hooks/userHooks";
-import { UserContext } from "../lib/context/userContext";
-import { useEffect } from "react";
-import { auth, onAuthStateChanged } from "../lib/firebase";
+import { Provider } from "react-redux";
+import { store } from "../lib/store";
+import AppWrapper from "../components/AppWrapper";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const userData = useUserData();
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (userAuth) => {
-      if (userAuth) {
-      } else {
-      }
-    });
-  }, []);
-
   return (
-    <UserContext.Provider value={userData}>
-      <Component {...pageProps} />
-      <Toaster />
-    </UserContext.Provider>
+    <Provider store={store}>
+      <AppWrapper>
+        <Component {...pageProps} />
+        <Toaster />
+      </AppWrapper>
+    </Provider>
   );
 }
 

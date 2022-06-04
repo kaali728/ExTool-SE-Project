@@ -5,10 +5,14 @@ import lottieJson from "../public/assets/login_lottie.json";
 import scss from "../styles/auth/Auth.module.scss";
 import { useRouter } from "next/router";
 import { auth, signInWithEmailAndPassword } from "../lib/firebase";
+import { useDispatch } from "react-redux";
+import { login } from "../lib/slices/userSlice";
+import { DASHBOARD, PASSWORD_FORGET, SIGNUP } from "../lib/constants/routes";
 
 function signin() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
 
   const signinToApp = (e) => {
     e.preventDefault();
@@ -16,7 +20,15 @@ function signin() {
     signInWithEmailAndPassword(auth, form.email, form.password)
       .then((userAuth) => {
         console.log(userAuth);
-        router.push("/");
+        dispatch(
+          login({
+            email: userAuth.user.email,
+            uid: userAuth.user.uid,
+            displayName: userAuth.user.displayName,
+            photoUrl: userAuth.user.photoURL,
+          })
+        );
+        router.push(DASHBOARD);
       })
       .catch((err) => {
         alert(err);
@@ -57,7 +69,7 @@ function signin() {
           <Text
             pointer
             style={{ textAlign: "right", width: "100%" }}
-            onClick={() => router.push("/forgetpassword")}
+            onClick={() => router.push(PASSWORD_FORGET)}
             margin="m"
           >
             Forget password?
@@ -77,7 +89,7 @@ function signin() {
               pointer
               weight="bold"
               color={"--primary"}
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push(SIGNUP)}
               style={{ textAlign: "center" }}
             >
               Create Account
@@ -87,11 +99,12 @@ function signin() {
       </Flex>
       <Flex alignItems="center" justifyContent="center" _class={scss.right}>
         <Text
-          style={{ fontSize: 40, textAlign: "center" }}
+          style={{ fontSize: 50, textAlign: "center" }}
           weight="bold"
           color={"--text100"}
         >
-          The Best Way To Manage Your Assets
+          {/* The Best Way To Manage Your Assets */}
+          Staff Login
         </Text>
         <Lottie
           loop

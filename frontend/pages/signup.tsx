@@ -10,6 +10,8 @@ import {
   updateProfile,
 } from "../lib/firebase";
 import toast from "react-hot-toast";
+import { login } from "../lib/slices/userSlice";
+import { DASHBOARD, SIGNIN } from "../lib/constants/routes";
 
 function signup() {
   const router = useRouter();
@@ -23,11 +25,8 @@ function signup() {
   const register = (e) => {
     e.preventDefault();
     if (!form.name) {
-      return alert("Please enter a full name");
+      return toast.error("Please enter a full name");
     }
-
-    console.log("register the user");
-
     createUserWithEmailAndPassword(auth, form.email, form.password)
       .then((userAuth) => {
         toast.success("Successfully registered!");
@@ -36,7 +35,12 @@ function signup() {
         })
           .then((user) => {
             console.log("UPDATED USER", user);
-            router.push("/");
+            login({
+              email: userAuth.user.email,
+              uid: userAuth.user.uid,
+              displayName: name,
+            });
+            router.push(DASHBOARD);
           })
           .catch((error) => {
             console.log("user not updated");
@@ -117,7 +121,7 @@ function signup() {
               weight="bold"
               color={"--primary"}
               style={{ textAlign: "center" }}
-              onClick={() => router.push("/signin")}
+              onClick={() => router.push(SIGNIN)}
             >
               Login
             </Text>
@@ -126,12 +130,13 @@ function signup() {
       </Flex>
       <Flex alignItems="center" justifyContent="center" _class={scss.right}>
         <Text
-          style={{ fontSize: 40, textAlign: "center" }}
+          style={{ fontSize: 50, textAlign: "center" }}
           weight="bold"
           color={"--text100"}
           margin="m xl"
         >
-          Just one step away from your new expert tool
+          {/* Just one step away from your new expert tool */}
+          Staff Register
         </Text>
         <Lottie
           loop
