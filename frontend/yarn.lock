@@ -228,10 +228,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@findnlink/neuro-ui@^1.0.27":
-  version "1.0.27"
-  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.27.tgz#d17401b614322b47612e3dcda59404cecaa4e84d"
-  integrity sha512-zEQMjzi+CBkf8k1tRtaRgy8wQKnr81n3snnMkZjWrgOOo+LmNFUeq6qBrk3YjgDnGVpYwJ7ksFvArsxyw9q7kg==
+"@findnlink/neuro-ui@^1.0.28":
+  version "1.0.28"
+  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.28.tgz#cbfc4085dd0e3e92b136fdd5badf85fbaddd3fdc"
+  integrity sha512-IPgzW4uBJwXEBA10n7zVxDE3DMe/6uX5Y/6cda3aplwSZnJ2nupe6HMhgarGtIS/m/IO19evNNZgNiEkAsXsmQ==
   dependencies:
     "@mdx-js/mdx" "1.6.22"
     "@mdx-js/react" "1.6.22"

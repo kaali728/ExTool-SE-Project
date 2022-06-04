@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@findnlink/neuro-ui": "^1.0.27",
+    "@findnlink/neuro-ui": "^1.0.28",
     "@reduxjs/toolkit": "^1.8.1",
     "@types/uuid": "^8.3.4",
     "firebase": "^9.7.0",

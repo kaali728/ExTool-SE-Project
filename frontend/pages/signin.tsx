@@ -14,7 +14,7 @@ function signin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
 
-  const signinToApp = (e) => {
+  const signinToApp = (e: any) => {
     e.preventDefault();
 
     signInWithEmailAndPassword(auth, form.email, form.password)
