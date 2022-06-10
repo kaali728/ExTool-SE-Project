@@ -19,6 +19,7 @@ import Service from "./assetPage/Service";
 import Gallery from "./assetPage/Gallery";
 import Contracts from "./assetPage/Contracts";
 import Availiblity from "./assetPage/Availiblity";
+import dynamic from "next/dynamic";
 
 type AssetProps = {
   onBackClick: () => void;
@@ -32,7 +33,7 @@ type AssetType = {
   table: any;
   serialNumber: string;
   engine: string;
-  location: string;
+  location: { long: number; lat: number };
   machineHours: number;
 };
 
@@ -43,7 +44,7 @@ export default function Asset({ onBackClick, id }: AssetProps) {
     imageUrl: DummyBugger.src,
     table: {},
     serialNumber: "ND126788",
-    location: "115 Stwart, Thornhill, L4J1K7",
+    location: { long: 42.9150826, lat: -79.4913604 },
     engine: "Running",
     machineHours: 1256,
   });
@@ -54,6 +55,10 @@ export default function Asset({ onBackClick, id }: AssetProps) {
   // useEffect(() => {
   //   setData({ id: id, imageUrl: DummyBugger.src });
   // }, []);
+
+  const MapWithNoSSR = dynamic(() => import("./assetPage/Map"), {
+    ssr: false,
+  });
 
   return (
     <div className={scss.asset}>
@@ -67,14 +72,7 @@ export default function Asset({ onBackClick, id }: AssetProps) {
       </Flex>
 
       <div className={scss.map}>
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d18875910.7550825!2d-113.71418756987697!3d54.723902171898864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4b0d03d337cc6ad9%3A0x9968b72aa2438fa5!2sKanada!5e0!3m2!1sde!2sde!4v1654796003917!5m2!1sde!2sde"
-          loading="lazy"
-          width={"100%"}
-          height={"400px"}
-          allowFullScreen={true}
-          referrerPolicy="no-referrer-when-downgrade"
-        ></iframe>
+        <MapWithNoSSR name={data.name} location={data.location} />
         <div className={scss.gradient}></div>
       </div>
 
@@ -114,7 +112,7 @@ export default function Asset({ onBackClick, id }: AssetProps) {
         </div>
       </Flex>
 
-      <Spacer padding="xl" />
+      <Spacer padding="xl 0" />
       <Tabs _class={scss.tabs}>
         <TabsHeader padding="m">
           <Tab margin="0 m 0 0" index={0}>

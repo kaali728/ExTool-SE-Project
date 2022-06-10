@@ -1,0 +1,36 @@
+.table {
+  padding: 0 var(--paddingM);
+
+  * {
+    color: var(--text200) !important;
+    background-color: inherit !important;
+  }
+
+  table {
+    border: 1px solid var(--text400);
+  }
+
+  tbody {
+    border-bottom: 1px solid var(--text400);
+  }
+
+  th {
+    border-bottom: 1px solid var(--text400);
+    border-right: 1px solid var(--text400);
+    padding: var(--paddingM);
+    text-align: start;
+    > div > :nth-child(2) {
+      margin-top: var(--paddingS);
+    }
+  }
+
+  td {
+    border-bottom: 1px solid var(--text400);
+    border-right: 1px solid var(--text400);
+    padding: var(--paddingM);
+  }
+
+  tfoot th {
+    font-weight: normal;
+  }
+}

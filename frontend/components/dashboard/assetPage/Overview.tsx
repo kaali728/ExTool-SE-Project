@@ -1,5 +1,5 @@
 import { Flex, Spacer, Text } from "@findnlink/neuro-ui";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import scss from "../Dashboard.module.scss";
 import Table from "./Table";
 import { GoLocation, GoTools } from "react-icons/go";
@@ -7,6 +7,19 @@ import { FaClock, FaHeartbeat } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
 
 export default function Overview({ data }: any) {
+  const [address, setAddress] = useState();
+
+  useEffect(() => {
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${data.location.long}&lon=${data.location.lat}`
+    )
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        setAddress(responseJson.display_name);
+      });
+  }, []);
+
   return (
     <Flex
       _class={scss.overview}
@@ -20,7 +33,7 @@ export default function Overview({ data }: any) {
             Current Location:
           </Flex>
         </Text>
-        <Text>{data.location}</Text>
+        <Text>{address}</Text>
         <Spacer />
 
         <Text weight="bold">

@@ -40,30 +40,31 @@
 
 .asset {
   .backButton {
-    z-index: 2;
+    z-index: 10;
     > div {
       transform: rotate(180deg);
     }
 
     transition: var(--transition);
     position: absolute;
-    background-color: var(--bg200);
+    background-color: var(--bg300);
     margin: var(--marginL);
     border-radius: 50%;
     width: 50px;
     height: 50px;
+    box-shadow: var(--dropShadow);
     cursor: pointer;
 
     &:hover {
       transform: scale(1.1);
+      background-color: var(--bg200);
     }
   }
   .map {
     width: 100%;
-
     position: relative;
 
-    iframe {
+    > :nth-child(1) {
       box-shadow: var(--dropShadow);
       border-radius: var(--borderRadius);
     }
@@ -108,7 +109,8 @@
 
   .overview {
     .stats {
-      width: 50%;
+      height: 100%;
+      width: 30%;
       margin-right: var(--marginXL);
       .runningAnimation {
         margin-left: 2px;
@@ -130,7 +132,7 @@
       }
     }
     .table {
-      width: 100%;
+      width: 70%;
     }
   }
 }
