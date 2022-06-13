@@ -1,4 +1,4 @@
-import { Input, Modal, Text } from "@findnlink/neuro-ui";
+import { Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
 import {
   getDownloadURL,
   ref,
@@ -7,9 +7,10 @@ import {
 } from "firebase/storage";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { storage } from "../../../lib/firebase";
+import { storage, firestore } from "../../../lib/firebase";
 import styles from "../Dashboard.module.scss";
 import { v4 } from "uuid";
+import { addDoc, collection } from "firebase/firestore";
 
 type Props = {
   openModal: boolean;
@@ -18,6 +19,7 @@ type Props = {
 function AddAsset({ openModal, setOpen }: Props) {
   const [newAsset, setNewAsset] = useState({
     name: "",
+    sn: "",
     image: null,
   });
 
@@ -30,7 +32,11 @@ function AddAsset({ openModal, setOpen }: Props) {
   }
 
   async function confirmNewAsset() {
-    if (newAsset.image == null || newAsset.name.length == 0) {
+    if (
+      newAsset.image == null ||
+      newAsset.sn.length == 0 ||
+      newAsset.name.length == 0
+    ) {
       toast.error("You need to add a Picture and give a name to it");
       return;
     }
@@ -62,10 +68,10 @@ function AddAsset({ openModal, setOpen }: Props) {
         console.log("Upload is " + progress + "% done");
         switch (snapshot.state) {
           case "paused":
-            console.log("Upload is paused");
+            //console.log("Upload is paused");
             break;
           case "running":
-            console.log("Upload is running");
+            //console.log("Upload is running");
             break;
         }
       },
@@ -87,11 +93,20 @@ function AddAsset({ openModal, setOpen }: Props) {
             break;
         }
       },
-      () => {
+      async () => {
         // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
+        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+        // Add a new document with a generated id.
+        const docRef = await addDoc(collection(firestore, "assets"), {
+          name: newAsset.name,
+          sn: newAsset.sn,
+          imageUrl: downloadUrl,
+          time: "",
+          status: "",
         });
+        console.log("Document written with ID: ", docRef.id);
+        toast.success("Asset created successfully");
+        setOpen(false);
       }
     );
   }
@@ -117,6 +132,14 @@ function AddAsset({ openModal, setOpen }: Props) {
         placeholder="Name of your Asset"
         onChange={newAssetChange}
       />
+      <Spacer />
+      <Input
+        name="sn"
+        placeholder="S/N"
+        value={newAsset.sn}
+        onChange={newAssetChange}
+      />
+      <Spacer />
       <input
         name="image"
         type="file"
