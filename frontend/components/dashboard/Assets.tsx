@@ -25,7 +25,9 @@ import {
   assetsChanged,
   getAllAssets,
   selectAssets,
+  setAssetsChanged,
 } from "../../lib/slices/assetSlice";
+import toast from "react-hot-toast";
 
 function Assets() {
   const dispatch = useDispatch();
@@ -45,13 +47,11 @@ function Assets() {
 
       if (isSubscribed) {
         dispatch(getAllAssets(assets));
+        dispatch(setAssetsChanged({ changed: false }));
       }
     };
 
-    // call the function
-    fetchData()
-      // make sure to catch any error
-      .catch(console.error);
+    fetchData().catch((e) => toast.error("Something went wrong!"));
 
     // cancel any future `setData`
     return () => (isSubscribed = false);
@@ -136,7 +136,7 @@ function Assets() {
                     //console.log("test", item.id);
                   }}
                 >
-                  <Image src={item.imageUrl.src} />
+                  <Image src={item.imageUrl} />
                   <CardHeader padding="0" margin="0">
                     <Text scale="xl" weight="bold" margin="xl m m m">
                       {item.name}

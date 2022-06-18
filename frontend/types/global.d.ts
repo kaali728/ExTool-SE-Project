@@ -1,8 +1,10 @@
-export type Asset = {
-    id: string;
-    name: string;
-    imageUrl: string;
-    sn: string;
-    time: string;
-    status: string;
-  };
+export type AssetType = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  table: any;
+  serialNumber: string;
+  engine: string;
+  location: { long: number; lat: number };
+  machineHours: number;
+};

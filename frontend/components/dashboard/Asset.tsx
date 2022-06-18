@@ -20,21 +20,11 @@ import Gallery from "./assetPage/Gallery";
 import Contracts from "./assetPage/Contracts";
 import Availiblity from "./assetPage/Availiblity";
 import dynamic from "next/dynamic";
+import { AssetType } from "../../types/global";
 
 type AssetProps = {
   onBackClick: () => void;
   id: string;
-};
-
-type AssetType = {
-  id: string;
-  imageUrl: string;
-  name: string;
-  table: any;
-  serialNumber: string;
-  engine: string;
-  location: { long: number; lat: number };
-  machineHours: number;
 };
 
 export default function Asset({ onBackClick, id }: AssetProps) {

@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export const assetSlice = createSlice({
   name: 'asset',
   initialState: {
-    asset: null,
+    selectdAsset: null,
     assets: [],
     assetsChanged: false
   },
@@ -22,6 +22,6 @@ export const { getAllAssets, setAssetsChanged } = assetSlice.actions;
 
 // selectors
 export const selectAssets = (state:any) => state.assets.assets;
-export const assetsChanged = (state:any) => state.assetsChanged;
+export const assetsChanged = (state:any) => state.assets.assetsChanged;
 
 export default assetSlice.reducer;

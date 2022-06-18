@@ -1,25 +1,14 @@
-import { Button, Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { storage, firestore, STATE_CHANGED } from "../../../lib/firebase";
+import { storage, STATE_CHANGED } from "../../../lib/firebase";
 import styles from "../Dashboard.module.scss";
 import { v4 } from "uuid";
-import { addDoc, collection } from "firebase/firestore";
 import { createNewAsset } from "../../../lib/api";
-import { Asset } from "../../../types/global";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  assetsChanged,
-  selectAssets,
-  setAssetsChanged,
-} from "../../../lib/slices/assetSlice";
-import { STATUS } from "../../../lib/models/status";
+import { useDispatch } from "react-redux";
+import { setAssetsChanged } from "../../../lib/slices/assetSlice";
+import { STATUS } from "../../../lib/models/assetEnum";
 
 type Props = {
   openModal: boolean;
@@ -29,7 +18,7 @@ function AddAsset({ openModal, setOpen }: Props) {
   const dispatch = useDispatch();
   const [newAsset, setNewAsset] = useState({
     name: "",
-    sn: "",
+    serialNumber: "",
   });
   const [imageUpload, setImageUpload] = useState<File | null>(null);
 
@@ -45,7 +34,7 @@ function AddAsset({ openModal, setOpen }: Props) {
     e.preventDefault();
     if (
       imageUpload == null ||
-      newAsset.sn.length == 0 ||
+      newAsset.serialNumber.length == 0 ||
       newAsset.name.length == 0
     ) {
       toast.error("You need to add a Picture and give a name to it");
@@ -55,7 +44,7 @@ function AddAsset({ openModal, setOpen }: Props) {
     await createNewAsset({
       id: "",
       name: newAsset.name,
-      sn: newAsset.sn,
+      serialNumber: newAsset.serialNumber,
       imageUrl: url,
       time: "3 Hours",
       status: STATUS.CONFIRMED,
@@ -117,7 +106,7 @@ function AddAsset({ openModal, setOpen }: Props) {
       scale={"xl"}
       padding={"xl"}
       type={"confirm"}
-      onConfirm={confirmNewAsset}
+      onConfirm={() => confirmNewAsset}
     >
       <Text scale="l" primary>
         New Asset
@@ -130,9 +119,9 @@ function AddAsset({ openModal, setOpen }: Props) {
       />
       <Spacer />
       <Input
-        name="sn"
+        name="serialNumber"
         placeholder="S/N"
-        value={newAsset.sn}
+        value={newAsset.serialNumber}
         onChange={newAssetChange}
       />
       <Spacer />
