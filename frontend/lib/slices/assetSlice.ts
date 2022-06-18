@@ -1,27 +1,51 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'lib/store';
+import { AssetType } from 'types/global';
 
+export type AssetsState = {
+  content: {
+    selectedAsset: AssetType | null,
+    assets: Array<AssetType>,
+    assetsChanged: boolean,
+    filteredAssets: Array<AssetType>
+  };
+};
+
+const initialState: AssetsState = {
+  content:  {
+    selectedAsset: null,
+    assets: [],
+    assetsChanged: false,
+    filteredAssets: []
+  },
+};
 
 export const assetSlice = createSlice({
   name: 'asset',
-  initialState: {
-    selectdAsset: null,
-    assets: [],
-    assetsChanged: false
-  },
+  initialState,
   reducers: {
     getAllAssets: (state, action) => {
-        state.assets = action.payload
+        state.content.assets = action.payload
     },
     setAssetsChanged: (state, action:PayloadAction<{changed: boolean}>) => {
-      state.assetsChanged = action.payload.changed;
+      state.content.assetsChanged = action.payload.changed;
+    },
+    setfilteredAssets(state,action:PayloadAction<Array<AssetType>>){
+      state.content.filteredAssets = action.payload;
     }
   },
 });
 
 export const { getAllAssets, setAssetsChanged } = assetSlice.actions;
 
+
+function selectSelf(state: RootState): AssetsState {
+  return state.assets;
+}
+
 // selectors
-export const selectAssets = (state:any) => state.assets.assets;
-export const assetsChanged = (state:any) => state.assets.assetsChanged;
+export const selectAssetsConten = createSelector(selectSelf, (state) => state.content);
+export const selectAssets = createSelector(selectSelf, (state) => state.content.assets);
+export const assetsChanged = createSelector(selectSelf, (state) => state.content.assetsChanged);
 
 export default assetSlice.reducer;

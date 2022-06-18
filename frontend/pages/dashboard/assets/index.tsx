@@ -35,6 +35,7 @@ function Assets() {
   const assets = useSelector(selectAssets);
   const assetsStateChanged = useSelector(assetsChanged);
   const router = useRouter();
+
   useEffect((): any => {
     let isSubscribed = true;
     let assets: any[] = [];

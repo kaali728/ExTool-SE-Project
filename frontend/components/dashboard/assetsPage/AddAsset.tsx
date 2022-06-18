@@ -37,7 +37,7 @@ function AddAsset({ openModal, setOpen }: Props) {
       newAsset.serialNumber.length == 0 ||
       newAsset.name.length == 0
     ) {
-      toast.error("You need to add a Picture and give a name to it");
+      toast.error("You need to add a Picture and give a name");
       return;
     }
     const url = await uploadFiles(imageUpload);
@@ -106,7 +106,7 @@ function AddAsset({ openModal, setOpen }: Props) {
       scale={"xl"}
       padding={"xl"}
       type={"confirm"}
-      onConfirm={() => confirmNewAsset}
+      onConfirm={confirmNewAsset}
     >
       <Text scale="l" primary>
         New Asset
