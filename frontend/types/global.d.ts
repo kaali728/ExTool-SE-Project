@@ -1,5 +1,5 @@
 export type AssetType = {
-  id: string;
+  id: string | string[];
   imageUrl: string;
   name: string;
   table: any;

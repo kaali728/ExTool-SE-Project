@@ -11,25 +11,26 @@ import {
   TabsHeader,
   Text,
 } from "@findnlink/neuro-ui";
-import React, { useEffect, useState } from "react";
-import scss from "./Dashboard.module.scss";
-import DummyBugger from "../../public/assets/bobcat-e26.png";
-import Overview from "./assetPage/Overview";
-import Service from "./assetPage/Service";
-import Gallery from "./assetPage/Gallery";
-import Contracts from "./assetPage/Contracts";
-import Availiblity from "./assetPage/Availiblity";
 import dynamic from "next/dynamic";
-import { AssetType } from "../../types/global";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { AssetType } from "types/global";
+import Availiblity from "components/dashboard/assetPage/Availiblity";
+import Contracts from "components/dashboard/assetPage/Contracts";
+import Gallery from "components/dashboard/assetPage/Gallery";
+import Overview from "components/dashboard/assetPage/Overview";
+import Service from "components/dashboard/assetPage/Service";
+import scss from "components/dashboard/Dashboard.module.scss";
+import DummyBugger from "../../../public/assets/bobcat-e26.png";
 
-type AssetProps = {
-  onBackClick: () => void;
-  id: string;
-};
+export default function Asset() {
+  const router = useRouter();
+  const { id } = router.query;
 
-export default function Asset({ onBackClick, id }: AssetProps) {
+  console.log(id);
+
   const [data, setData] = useState<AssetType>({
-    id: id,
+    id: id || "",
     name: "T66 T-Loader",
     imageUrl: DummyBugger.src,
     table: {},
@@ -46,16 +47,19 @@ export default function Asset({ onBackClick, id }: AssetProps) {
   //   setData({ id: id, imageUrl: DummyBugger.src });
   // }, []);
 
-  const MapWithNoSSR = dynamic(() => import("./assetPage/Map"), {
-    ssr: false,
-  });
+  const MapWithNoSSR = dynamic(
+    () => import("../../../components/dashboard/assetPage/Map"),
+    {
+      ssr: false,
+    }
+  );
 
   return (
     <div className={scss.asset}>
       <Flex
         alignItems="center"
         justifyContent="center"
-        onClick={onBackClick}
+        onClick={() => router.back()}
         className={scss.backButton}
       >
         <Icon icon="arrow"></Icon>
