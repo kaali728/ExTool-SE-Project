@@ -8,9 +8,10 @@ export async function createNewAsset(asset: any){
         name: asset.name,
         sn: asset.sn,
         imageUrl: asset.imageUrl,
-        time: "",
-        status: "",
+        time: asset.time,
+        status: asset.status,
       });
       console.log("Document written with ID: ", docRef.id);
       toast.success("Asset created successfully");
+      return asset;
 }

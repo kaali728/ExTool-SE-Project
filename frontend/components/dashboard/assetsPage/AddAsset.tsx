@@ -1,4 +1,4 @@
-import { Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
+import { Button, Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
 import {
   getDownloadURL,
   ref,
@@ -13,32 +13,30 @@ import { v4 } from "uuid";
 import { addDoc, collection } from "firebase/firestore";
 import { createNewAsset } from "../../../lib/api";
 import { Asset } from "../../../types/global";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  assetsChanged,
+  selectAssets,
+  setAssetsChanged,
+} from "../../../lib/slices/assetSlice";
+import { STATUS } from "../../../lib/models/status";
 
 type Props = {
   openModal: boolean;
   setOpen: any;
 };
 function AddAsset({ openModal, setOpen }: Props) {
+  const dispatch = useDispatch();
   const [newAsset, setNewAsset] = useState({
     name: "",
     sn: "",
-    image: null,
   });
+  const [imageUpload, setImageUpload] = useState<File | null>(null);
 
   function newAssetChange(e: any) {
-    let uploadImage: any;
-    if (e.name === "image") {
-      let reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
-      reader.onload = function (e) {
-        uploadImage = e.target?.result;
-      };
-    }
-
     setNewAsset((prev) => ({
       ...prev,
-      [e.target.name]:
-        e.name == "image" ? new Blob([uploadImage]) : e.target.value,
+      [e.target.name]: e.target.value,
     }));
     e.preventDefault();
   }
@@ -46,29 +44,30 @@ function AddAsset({ openModal, setOpen }: Props) {
   async function confirmNewAsset(e: any) {
     e.preventDefault();
     if (
-      newAsset.image == null ||
+      imageUpload == null ||
       newAsset.sn.length == 0 ||
       newAsset.name.length == 0
     ) {
       toast.error("You need to add a Picture and give a name to it");
       return;
     }
-    const url = await uploadFiles(newAsset.image);
+    const url = await uploadFiles(imageUpload);
     await createNewAsset({
       id: "",
       name: newAsset.name,
       sn: newAsset.sn,
       imageUrl: url,
-      time: "",
-      status: "",
+      time: "3 Hours",
+      status: STATUS.CONFIRMED,
     });
+    dispatch(setAssetsChanged({ changed: true }));
     setOpen(false);
   }
 
   async function uploadFiles(files: any) {
     if (!files) return;
 
-    console.log(typeof files);
+    console.log(files);
 
     const storageRef = ref(
       storage,
@@ -79,7 +78,7 @@ function AddAsset({ openModal, setOpen }: Props) {
       contentType: "image/jpeg",
     };
 
-    const uploadTask = uploadBytesResumable(storageRef, files, metadata);
+    const uploadTask = uploadBytesResumable(storageRef, imageUpload!, metadata);
 
     uploadTask.on(
       STATE_CHANGED,
@@ -137,7 +136,13 @@ function AddAsset({ openModal, setOpen }: Props) {
         onChange={newAssetChange}
       />
       <Spacer />
-      <input name="image" type="file" onChange={newAssetChange} />
+      <input
+        type="file"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          if (!e.target.files) return;
+          setImageUpload(e.target.files[0]);
+        }}
+      />
     </Modal>
   );
 }

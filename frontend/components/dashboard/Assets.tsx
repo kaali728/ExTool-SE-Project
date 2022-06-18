@@ -21,31 +21,29 @@ import Asset from "./Asset";
 import { firestore } from "../../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllAssets, selectAssets } from "../../lib/slices/assetSlice";
+import {
+  assetsChanged,
+  getAllAssets,
+  selectAssets,
+} from "../../lib/slices/assetSlice";
 
 function Assets() {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<null | string>(null);
   const assets = useSelector(selectAssets);
+  const assetsStateChanged = useSelector(assetsChanged);
 
   useEffect((): any => {
     let isSubscribed = true;
-    //Todo: add assets type
     let assets: any[] = [];
-    // declare the async data fetching function
     const fetchData = async () => {
-      // get the data from the api
       const querySnapshot = await getDocs(collection(firestore, "assets"));
       querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        // console.log(doc.id, " => ", doc.data());
         assets.push({ id: doc.id, ...doc.data() });
-      }); // convert the data to json
+      });
 
-      // set state with the result if `isSubscribed` is true
       if (isSubscribed) {
-        //setData(json);
         dispatch(getAllAssets(assets));
       }
     };
@@ -57,7 +55,7 @@ function Assets() {
 
     // cancel any future `setData`
     return () => (isSubscribed = false);
-  }, []);
+  }, [assetsStateChanged]);
 
   useEffect(() => {
     console.log(assets);
@@ -127,7 +125,7 @@ function Assets() {
             </Flex>
             <Spacer />
             <Grid _class={scss.assetsGrid}>
-              {data.map((item, index) => (
+              {assets.map((item: any, index: any) => (
                 <Card
                   key={index}
                   pointer
