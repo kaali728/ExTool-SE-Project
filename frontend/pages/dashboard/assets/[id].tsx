@@ -125,7 +125,7 @@ export default function Asset() {
             Availibility
           </Tab>
         </TabsHeader>
-        <TabsContent margin="0" padding="xl 0 0 0">
+        <TabsContent margin="0 0 xl 0" padding="xl 0 0 0">
           {[
             <Overview data={data} />,
             <Service />,

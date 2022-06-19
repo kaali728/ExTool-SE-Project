@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   createTable,
@@ -11,8 +11,15 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { makeData, Person } from "./makeData";
-import { Text } from "@findnlink/neuro-ui";
+import { Button, Flex, Icon, Text } from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiSkipBack,
+  FiSkipForward,
+} from "react-icons/fi";
+import { FaArrowLeft } from "react-icons/fa";
 
 let table = createTable()
   .setRowType<Person>()
@@ -92,8 +99,11 @@ export default function Table() {
     []
   );
 
+  useEffect(() => {
+    instance.setPageSize(Number(20));
+  }, []);
+
   const [data, setData] = React.useState(() => makeData(1000));
-  const refreshData = () => setData(() => makeData(1000));
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
@@ -128,7 +138,7 @@ export default function Table() {
 
   return (
     <div className={scss.table}>
-      <Text weight="bold" scale="xl">
+      <Text weight="bold" scale="xl" margin="m 0 xl 0">
         Delivery Schedule
       </Text>
       <div style={{ overflow: "auto" }}>
@@ -171,74 +181,39 @@ export default function Table() {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
+      <Flex flexDirection="row" justifyContent="space-between" margin="xl 0">
+        <Button
           onClick={() => instance.setPageIndex(0)}
           disabled={!instance.getCanPreviousPage()}
         >
-          {"<<"}
-        </button>
-        <button
-          className="border rounded p-1"
+          <FiSkipBack />
+        </Button>
+        <Button
           onClick={() => instance.previousPage()}
           disabled={!instance.getCanPreviousPage()}
         >
-          {"<"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => instance.nextPage()}
-          disabled={!instance.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => instance.setPageIndex(instance.getPageCount() - 1)}
-          disabled={!instance.getCanNextPage()}
-        >
-          {">>"}
-        </button>
-        <span className="flex items-center gap-1">
+          <FiArrowLeft />
+        </Button>
+        <Text align="center">
           <div>Page</div>
           <strong>
             {instance.getState().pagination.pageIndex + 1} of{" "}
             {instance.getPageCount()}
           </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={instance.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              instance.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={instance.getState().pagination.pageSize}
-          onChange={(e) => {
-            instance.setPageSize(Number(e.target.value));
-          }}
+        </Text>
+        <Button
+          onClick={() => instance.nextPage()}
+          disabled={!instance.getCanNextPage()}
         >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>{instance.getRowModel().rows.length} Rows</div>
-      <div>
-        <button onClick={() => rerender()}>Force Rerender</button>
-      </div>
-      <div>
-        <button onClick={() => refreshData()}>Refresh Data</button>
-      </div>
+          <FiArrowRight />
+        </Button>
+        <Button
+          onClick={() => instance.setPageIndex(instance.getPageCount() - 1)}
+          disabled={!instance.getCanNextPage()}
+        >
+          <FiSkipForward />
+        </Button>
+      </Flex>
     </div>
   );
 }
