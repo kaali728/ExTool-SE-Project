@@ -57,9 +57,9 @@ function Assets() {
     return () => (isSubscribed = false);
   }, [assetsStateChanged]);
 
-  useEffect(() => {
-    console.log(assets);
-  }, [assets]);
+  // useEffect(() => {
+  //   console.log(assets);
+  // }, [assets]);
 
   return (
     <Flex padding="xl">
