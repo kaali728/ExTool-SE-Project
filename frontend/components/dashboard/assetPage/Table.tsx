@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   createTable,
@@ -20,6 +20,7 @@ import {
   FiSkipForward,
 } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
+import { updateTable } from "lib/api";
 
 let table = createTable()
   .setRowType<Person>()
@@ -74,7 +75,7 @@ function useSkipper() {
   return [shouldSkip, skip] as const;
 }
 
-export default function Table() {
+export default function Table({ _data }: { _data: any }) {
   const rerender = React.useReducer(() => ({}), {})[1];
 
   const columns = React.useMemo(
@@ -103,7 +104,9 @@ export default function Table() {
     instance.setPageSize(Number(20));
   }, []);
 
-  const [data, setData] = React.useState(() => makeData(1000));
+  const [data, setData] = useState(_data.table);
+  const [showSaveButton, setShowSaveButton] = useState(false);
+  const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
@@ -120,8 +123,8 @@ export default function Table() {
       updateData: (rowIndex, columnId, value) => {
         // Skip age index reset until after next rerender
         skipAutoResetPageIndex();
-        setData((old) =>
-          old.map((row, index) => {
+        setData((old: any) =>
+          old.map((row: any, index: number) => {
             if (index === rowIndex) {
               return {
                 ...old[rowIndex]!,
@@ -136,11 +139,46 @@ export default function Table() {
     debugTable: true,
   });
 
+  const addNewColoumn = () => {
+    setData((prev: any) => [
+      { date: "", status: "", destination: "" },
+      ...prev,
+    ]);
+  };
+
+  const save = () => {
+    updateTable(_data.id, data);
+    setShowSaveButton(false);
+  };
+
+  useEffect(() => {
+    if (data) {
+      setShowSaveButtonToggle(true);
+    }
+    if (showSaveButtonToggle) {
+      setShowSaveButton(true);
+    }
+  }, [data]);
+
   return (
     <div className={scss.table}>
-      <Text weight="bold" scale="xl" margin="m 0 xl 0">
-        Delivery Schedule
-      </Text>
+      <Flex
+        flexDirection="row"
+        justifyContent="space-between"
+        padding="0 0 m 0"
+      >
+        <Text weight="bold" scale="xl" margin="m 0 xl 0">
+          Delivery Schedule
+        </Text>
+        <div>
+          <Button onClick={addNewColoumn}>Add</Button>
+          {showSaveButton && (
+            <Button onClick={save} margin="0">
+              Save
+            </Button>
+          )}
+        </div>
+      </Flex>
       <div style={{ overflow: "auto" }}>
         <table>
           <thead>

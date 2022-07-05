@@ -3,6 +3,7 @@ import {
   Flex,
   Icon,
   Image,
+  Input,
   Modal,
   Spacer,
   Tab,
@@ -13,7 +14,7 @@ import {
 } from "@findnlink/neuro-ui";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AssetType } from "types/global";
 import Availiblity from "components/dashboard/assetPage/Availiblity";
 import Contracts from "components/dashboard/assetPage/Contracts";
@@ -24,12 +25,32 @@ import scss from "components/dashboard/Dashboard.module.scss";
 import DummyBugger from "../../../public/assets/bobcat-e26.png";
 import { collection, doc, getDoc, getFirestore } from "firebase/firestore";
 import { firestore } from "lib/firebase";
+import { ENGINE } from "lib/models/assetEnum";
+
+import { useDropzone } from "react-dropzone";
 
 export default function Asset() {
   const router = useRouter();
   const { id } = router.query;
 
-  console.log(id);
+  const [images, setImages] = useState([]);
+  const onDrop = useCallback((acceptedFiles: any[]) => {
+    acceptedFiles.map((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setImages((prevState): any => [
+          ...prevState,
+          { id: index, src: e.target!.result },
+        ]);
+      };
+      reader.readAsDataURL(file);
+      return file;
+    });
+  }, []);
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    onDrop,
+  });
 
   const [data, setData] = useState<AssetType | null>();
 
@@ -39,6 +60,7 @@ export default function Asset() {
   useEffect(() => {
     if (id) {
       const fetchData = async () => {
+        //@ts-ignore
         const docSnap = await getDoc(doc(getFirestore(), "assets", id)).then(
           (asset) => {
             console.log("asset", asset.data());
@@ -49,13 +71,13 @@ export default function Asset() {
                 id: id || "",
                 name: data.name || "",
                 imageUrl: data.imageUrl || "",
-                table: {},
+                table: data.table || [],
                 serialNumber: data.sn || "",
                 location: data.location || {
                   long: 42.9150826,
                   lat: -79.4913604,
                 },
-                engine: data.engine || "Running",
+                engine: data.engine || ENGINE.STOPED,
                 machineHours: data.machineHours || "",
                 ...asset.data(),
               }));
@@ -163,8 +185,18 @@ export default function Asset() {
           onClose={() => {
             setOpenPickup(false);
           }}
+          type="confirm"
         >
           Pickup
+          <Input name={"pickup-address"} value={""} />
+          <input type="date" id="pickup-date" name="pickup-date" />
+          <div {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            <p>Drag 'n' drop some files here, or click to select files</p>
+          </div>
+          {images.map((image: any) => (
+            <Image src={image.src} />
+          ))}
         </Modal>
 
         <Modal

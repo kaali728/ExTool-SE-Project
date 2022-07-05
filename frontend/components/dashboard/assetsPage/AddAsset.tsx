@@ -8,7 +8,7 @@ import { v4 } from "uuid";
 import { createNewAsset } from "../../../lib/api";
 import { useDispatch } from "react-redux";
 import { setAssetsChanged } from "../../../lib/slices/assetSlice";
-import { STATUS } from "../../../lib/models/assetEnum";
+import { ENGINE, STATUS } from "../../../lib/models/assetEnum";
 
 type Props = {
   openModal: boolean;
@@ -37,7 +37,9 @@ function AddAsset({ openModal, setOpen }: Props) {
       newAsset.serialNumber.length == 0 ||
       newAsset.name.length == 0
     ) {
-      toast.error("You need to add a Picture and give a name");
+      toast.error(
+        "You need to add a picture, give the asset a name and add a serial number"
+      );
       return;
     }
     const url = await uploadFiles(imageUpload);
@@ -46,8 +48,18 @@ function AddAsset({ openModal, setOpen }: Props) {
       name: newAsset.name,
       serialNumber: newAsset.serialNumber,
       imageUrl: url,
-      time: "3 Hours",
       status: STATUS.CONFIRMED,
+      time: 0,
+      table: [
+        {
+          date: new Date().toString(),
+          status: "Asset created",
+          destination: "",
+        },
+      ],
+      engine: ENGINE.STOPED,
+      location: { long: 0, lat: 0 },
+      machineHours: 0,
     });
     dispatch(setAssetsChanged({ changed: true }));
     setOpen(false);

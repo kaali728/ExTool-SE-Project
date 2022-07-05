@@ -62,8 +62,10 @@ export default function Overview({ data }: any) {
         <Text>{data.machineHours} hours</Text>
       </div>
       <div className={scss.table + " " + scss.tabsContainer}>
-        <Table />
+        <Table _data={data} />
       </div>
     </Flex>
   );
 }
+
+console.log("date", new Date().toString());
