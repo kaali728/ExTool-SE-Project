@@ -28,34 +28,21 @@ import { firestore } from "lib/firebase";
 import { ENGINE } from "lib/models/assetEnum";
 
 import { useDropzone } from "react-dropzone";
+import PickupModal from "src/components/dashboard/assetPage/PickupModal";
+import DropoffModal from "src/components/dashboard/assetPage/DropoffModal";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedAssetSelector, setSelectedAsset } from "lib/slices/assetSlice";
 
 export default function Asset() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const { id } = router.query;
 
-  const [images, setImages] = useState([]);
-  const onDrop = useCallback((acceptedFiles: any[]) => {
-    acceptedFiles.map((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        setImages((prevState): any => [
-          ...prevState,
-          { id: index, src: e.target!.result },
-        ]);
-      };
-      reader.readAsDataURL(file);
-      return file;
-    });
-  }, []);
-
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    onDrop,
-  });
-
-  const [data, setData] = useState<AssetType | null>();
-
   const [openPickup, setOpenPickup] = useState(false);
   const [openDropoff, setOpenDropoff] = useState(false);
+
+  // const [data, setData] = useState<AssetType | null>();
+  const data = useSelector(selectedAssetSelector);
 
   useEffect(() => {
     if (id) {
@@ -67,20 +54,38 @@ export default function Asset() {
             const data = asset.data();
 
             if (data) {
-              setData((prev) => ({
-                id: id || "",
-                name: data.name || "",
-                imageUrl: data.imageUrl || "",
-                table: data.table || [],
-                serialNumber: data.sn || "",
-                location: data.location || {
-                  long: 42.9150826,
-                  lat: -79.4913604,
-                },
-                engine: data.engine || ENGINE.STOPED,
-                machineHours: data.machineHours || "",
-                ...asset.data(),
-              }));
+              // setData((prev) => ({
+              //   id: id || "",
+              //   name: data.name || "",
+              //   imageUrl: data.imageUrl || "",
+              //   table: data.table || [],
+              //   serialNumber: data.sn || "",
+              //   location: data.location || {
+              //     long: 42.9150826,
+              //     lat: -79.4913604,
+              //   },
+              //   engine: data.engine || ENGINE.STOPED,
+              //   machineHours: data.machineHours || "",
+              //   ...asset.data(),
+              // }));
+              dispatch(
+                setSelectedAsset({
+                  asset: {
+                    id: id || "",
+                    name: data.name || "",
+                    imageUrl: data.imageUrl || "",
+                    table: data.table || [],
+                    serialNumber: data.sn || "",
+                    location: data.location || {
+                      long: 42.9150826,
+                      lat: -79.4913604,
+                    },
+                    engine: data.engine || ENGINE.STOPED,
+                    machineHours: data.machineHours || "",
+                    ...asset.data(),
+                  },
+                })
+              );
             }
           }
         );
@@ -103,7 +108,10 @@ export default function Asset() {
         <Flex
           alignItems="center"
           justifyContent="center"
-          onClick={() => router.back()}
+          onClick={() => {
+            dispatch(setSelectedAsset({ asset: null }));
+            router.back();
+          }}
           className={scss.backButton}
         >
           <Icon icon="arrow"></Icon>
@@ -151,7 +159,7 @@ export default function Asset() {
         </Flex>
 
         <Spacer padding="xl 0" />
-        <Tabs _class={scss.tabs}>
+        <Tabs id="assetTabs" _class={scss.tabs}>
           <TabsHeader padding="m">
             <Tab margin="0 m 0 0" index={0}>
               Overview
@@ -180,33 +188,8 @@ export default function Asset() {
           </TabsContent>
         </Tabs>
 
-        <Modal
-          open={openPickup}
-          onClose={() => {
-            setOpenPickup(false);
-          }}
-          type="confirm"
-        >
-          Pickup
-          <Input name={"pickup-address"} value={""} />
-          <input type="date" id="pickup-date" name="pickup-date" />
-          <div {...getRootProps({ className: "dropzone" })}>
-            <input {...getInputProps()} />
-            <p>Drag 'n' drop some files here, or click to select files</p>
-          </div>
-          {images.map((image: any) => (
-            <Image src={image.src} />
-          ))}
-        </Modal>
-
-        <Modal
-          open={openDropoff}
-          onClose={() => {
-            setOpenDropoff(false);
-          }}
-        >
-          Dropoff
-        </Modal>
+        <PickupModal data={data} open={openPickup} setOpen={setOpenPickup} />
+        <DropoffModal data={data} open={openDropoff} setOpen={setOpenDropoff} />
       </div>
     )
   );

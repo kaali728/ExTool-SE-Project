@@ -36,17 +36,41 @@ export const assetSlice = createSlice({
     setfilteredAssets(state, action: PayloadAction<Array<AssetType>>) {
       state.content.filteredAssets = action.payload;
     },
+    setSelectedAsset(
+      state,
+      action: PayloadAction<{ asset: AssetType | null }>
+    ) {
+      state.content.selectedAsset = action.payload.asset;
+    },
+    updateSelectedAssetTable(
+      state,
+      action: PayloadAction<{
+        tableContent: {
+          date: string;
+          status: string;
+          destination: string;
+          images: string[];
+        };
+      }>
+    ) {
+      state.content.selectedAsset?.table.unshift(action.payload.tableContent);
+    },
   },
 });
 
-export const { getAllAssets, setAssetsChanged } = assetSlice.actions;
+export const {
+  getAllAssets,
+  setAssetsChanged,
+  setSelectedAsset,
+  updateSelectedAssetTable,
+} = assetSlice.actions;
 
 function selectSelf(state: RootState): AssetsState {
   return state.assets;
 }
 
 // selectors
-export const selectAssetsConten = createSelector(
+export const selectAssetsContent = createSelector(
   selectSelf,
   (state) => state.content
 );
@@ -57,6 +81,10 @@ export const selectAssets = createSelector(
 export const assetsChanged = createSelector(
   selectSelf,
   (state) => state.content.assetsChanged
+);
+export const selectedAssetSelector = createSelector(
+  selectSelf,
+  (state) => state.content.selectedAsset
 );
 
 export default assetSlice.reducer;

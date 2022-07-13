@@ -21,6 +21,8 @@ import {
 } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
 import { updateTable } from "lib/api";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedAssetSelector } from "lib/slices/assetSlice";
 
 let table = createTable()
   .setRowType<Person>()
@@ -76,7 +78,7 @@ function useSkipper() {
 }
 
 export default function Table({ _data }: { _data: any }) {
-  const rerender = React.useReducer(() => ({}), {})[1];
+  //const rerender = React.useReducer(() => ({}), {})[1];
 
   const columns = React.useMemo(
     () => [
@@ -104,7 +106,10 @@ export default function Table({ _data }: { _data: any }) {
     instance.setPageSize(Number(20));
   }, []);
 
-  const [data, setData] = useState(_data.table);
+  const selectedAsset = useSelector(selectedAssetSelector);
+  const [data, setData] = useState(selectedAsset?.table);
+  //const data = useSelector();
+
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
 
@@ -138,6 +143,10 @@ export default function Table({ _data }: { _data: any }) {
     },
     debugTable: true,
   });
+
+  useEffect(() => {
+    setData(selectedAsset?.table);
+  }, [selectedAsset]);
 
   const addNewColoumn = () => {
     setData((prev: any) => [
@@ -173,7 +182,7 @@ export default function Table({ _data }: { _data: any }) {
         <div>
           <Button onClick={addNewColoumn}>Add</Button>
           {showSaveButton && (
-            <Button onClick={save} margin="0">
+            <Button primary onClick={save} margin="0">
               Save
             </Button>
           )}
