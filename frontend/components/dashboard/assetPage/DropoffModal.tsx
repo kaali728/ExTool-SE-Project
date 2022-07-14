@@ -6,11 +6,22 @@ import {
   Flex,
   ImageGallery,
 } from "@findnlink/neuro-ui";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectedAssetSelector,
+  updateSelectedAssetTable,
+} from "lib/slices/assetSlice";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage, STATE_CHANGED } from "../../../lib/firebase";
+import toast from "react-hot-toast";
+import { v4 } from "uuid";
+import useAsyncEffect from "lib/hooks/useAsyncEffect";
+import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 
-export default function PickupModal({
+export default function DropoffModal({
   open,
   setOpen,
   data,
@@ -20,6 +31,7 @@ export default function PickupModal({
   data: any;
 }) {
   const [images, setImages] = useState([]);
+  const dispatch = useDispatch();
   const onDrop = useCallback((acceptedFiles: any[]) => {
     acceptedFiles.map((file, index) => {
       const reader = new FileReader();
@@ -39,11 +51,100 @@ export default function PickupModal({
   });
 
   const [formData, setFormData] = useState({ address: "", date: "" });
+  const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
+  const selectedAsset = useSelector(selectedAssetSelector);
 
   const submit = async () => {
-    await updateTable(data.id, data.table);
-    console.log("submit");
+    if (
+      formData.address.length === 0 ||
+      formData.date.length === 0 ||
+      images.length === 0
+    ) {
+      toast.error("You have to give an address, a date and upload a picture");
+      return true;
+    }
+
+    const downloadUrls = await uploadFiles(images);
+
+    if (downloadUrls == undefined) {
+      toast.error("Could not upload Images!");
+      return true;
+    }
+
+    dispatch(
+      updateSelectedAssetTable({
+        tableContent: {
+          date: formData.date,
+          destination: formData.address,
+          status: ASSET_PICK_DROP.DROP_OFF,
+          images: downloadUrls,
+        },
+      })
+    );
+    setTableSaveToggle(true);
+    return false;
   };
+
+  useAsyncEffect(
+    async (stopped) => {
+      if (tableSaveToggle) {
+        await updateTable(selectedAsset?.id, selectedAsset?.table);
+        setTableSaveToggle(false);
+      }
+
+      setImages([]);
+      setFormData({ address: "", date: "" });
+      acceptedFiles.splice(0, acceptedFiles.length);
+
+      if (stopped()) return;
+    },
+    [tableSaveToggle]
+  );
+
+  function uploadFiles(files: any) {
+    if (!files) return;
+    const metadata = {
+      contentType: "image/jpeg",
+    };
+
+    let urls = acceptedFiles.map(async (image, index: number) => {
+      const storageRef = ref(
+        storage,
+        `assets/${selectedAsset?.name}/images/drop-off-${formData.date}-${v4()}`
+      );
+      const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+
+      uploadTask.on(
+        STATE_CHANGED,
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          switch (error.code) {
+            case "storage/unauthorized":
+              // User doesn't have permission to access the object
+              toast.error("User doesn't have permission to access the object");
+              break;
+            case "storage/canceled":
+              // User canceled the upload
+              toast.error("User canceled the upload");
+              break;
+          }
+        }
+      );
+      await uploadTask;
+      const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+      return downloadUrl;
+    });
+
+    let _downloadUrls = Promise.all(urls).then(function (results) {
+      return results;
+    });
+
+    return _downloadUrls;
+  }
 
   return (
     <Modal
@@ -53,18 +154,18 @@ export default function PickupModal({
       }}
       type="confirm"
       onConfirm={async () => {
-        await submit();
-        setOpen(false);
+        const modalOpen = await submit();
+        setOpen(modalOpen);
       }}
     >
       <Text weight="bold" scale="xl">
-        Drop Off
+        Dropoff
       </Text>
       <Flex>
         <Text scale="s">Address</Text>
         <Input
           scale="l"
-          name={"dropoff-address"}
+          name={"pickup-address"}
           placeholder="Address"
           value={formData.address}
           onChange={(e) => {
@@ -77,8 +178,12 @@ export default function PickupModal({
           scale="l"
           margin="0 0 m 0"
           type={"date"}
+          value={formData.date}
           id="pickup-date"
           name="pickup-date"
+          onChange={(e) => {
+            setFormData((prev) => ({ ...prev, date: e.target.value }));
+          }}
         />
         <Text scale="s">Pictures</Text>
         <div
