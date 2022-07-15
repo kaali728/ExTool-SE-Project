@@ -5,8 +5,9 @@ import {
   Text,
   Flex,
   ImageGallery,
+  Icon,
 } from "@findnlink/neuro-ui";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,51 +35,51 @@ export default function PickupModal({
   const dispatch = useDispatch();
 
   const [assetPictures, setAssetPictures] = useState({
-    front: "",
-    rightSide: "",
-    leftSide: "",
-    back: "",
-    fuelGuage: "",
-    hoursReading: "",
+    front: null,
+    rightSide: null,
+    leftSide: null,
+    back: null,
+    fuelGuage: null,
+    hoursReading: null,
   });
-  const [assetPictureStepMap, setAssetPictureStepMap] = useState(
-    new Map([
-      ["1", "front"],
-      ["2", "rightSide"],
-      ["3", "leftSide"],
-      ["4", "back"],
-      ["5", "fuelGuage"],
-      ["6", "hoursReading"],
-    ])
-  );
-  const [assetPictureStep, setAssetPictureStep] = useState(1);
+  // const [assetPictureStepMap, setAssetPictureStepMap] = useState(
+  //   new Map([
+  //     ["1", "front"],
+  //     ["2", "rightSide"],
+  //     ["3", "leftSide"],
+  //     ["4", "back"],
+  //     ["5", "fuelGuage"],
+  //     ["6", "hoursReading"],
+  //   ])
+  // );
+  // const [assetPictureStep, setAssetPictureStep] = useState(1);
 
-  const onDropAssetPictures = useCallback((acceptedFiles: any[]) => {
-    const assetSide = assetPictureStepMap.get(assetPictureStep.toString());
-    if (assetSide == undefined) return;
+  // const onDropAssetPictures = useCallback((acceptedFiles: any[]) => {
+  //   const assetSide = assetPictureStepMap.get(assetPictureStep.toString());
+  //   if (assetSide == undefined) return;
 
-    acceptedFiles.map((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        setImages((prevState): any => [
-          ...prevState,
-          { id: index, src: e.target!.result },
-        ]);
-      };
-      reader.readAsDataURL(file);
-      setAssetPictures((prev): any => ({
-        ...prev,
-        [assetSide]: file,
-      }));
-      if (assetPictureStep < 6) {
-        setAssetPictureStep((prev): number => prev + 1);
-      } else {
-        setAssetPictureStep((prev): number => 1);
-      }
-      console.log(assetPictures);
-      return file;
-    });
-  }, []);
+  //   acceptedFiles.map((file, index) => {
+  //     const reader = new FileReader();
+  //     reader.onload = function (e) {
+  //       setImages((prevState): any => [
+  //         ...prevState,
+  //         { id: index, src: e.target!.result },
+  //       ]);
+  //     };
+  //     reader.readAsDataURL(file);
+  //     setAssetPictures((prev): any => ({
+  //       ...prev,
+  //       [assetSide]: file,
+  //     }));
+  //     if (assetPictureStep < 6) {
+  //       setAssetPictureStep((prev): number => prev + 1);
+  //     } else {
+  //       setAssetPictureStep((prev): number => 1);
+  //     }
+  //     console.log(assetPictures);
+  //     return file;
+  //   });
+  // }, []);
 
   const onDropAdditional = useCallback(
     (additionalPictureAcceptedFiles: any[]) => {
@@ -97,9 +98,71 @@ export default function PickupModal({
     []
   );
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    onDrop: onDropAssetPictures,
-  });
+  const showInput = (name: string, index: number) => {
+    const ref = useRef(null);
+
+    const remove = () => {
+      setAssetPictures((prev) => ({ ...prev, [name]: null }));
+      if (ref.current) {
+        ref.current.value = "";
+      }
+    };
+
+    const setPicture = (e: any) => {
+      setAssetPictures((prev) => ({ ...prev, [name]: ref.current.files[0] }));
+    };
+
+    return (
+      <Flex
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Icon
+          style={assetPictures[name] ? {} : { visibility: "hidden" }}
+          padding="m"
+          pointer
+          icon="cross"
+          onClick={() => remove()}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Text margin="0 l 0 0">{name}:</Text>
+          <img
+            src={
+              assetPictures[name]
+                ? URL.createObjectURL(assetPictures[name])
+                : ""
+            }
+            width={40}
+            height={40}
+            style={
+              assetPictures[name]
+                ? { borderRadius: "5px", margin: "5px", objectFit: "cover" }
+                : { display: "none" }
+            }
+          ></img>
+        </div>
+        <input
+          style={{ width: "200px", backgroundColor: "var(--bg300)" }}
+          ref={ref}
+          type="file"
+          onChange={setPicture}
+        ></input>
+      </Flex>
+    );
+  };
+
+  // const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  //   onDrop: onDropAssetPictures,
+  // });
   const {
     acceptedFiles: additionalPictureAcceptedFiles,
     getRootProps: additionalPictureGetRootProps,
@@ -148,6 +211,14 @@ export default function PickupModal({
 
       setImages([]);
       setFormData({ address: "", date: "" });
+      setAssetPictures({
+        front: null,
+        rightSide: null,
+        leftSide: null,
+        back: null,
+        fuelGuage: null,
+        hoursReading: null,
+      });
       additionalPictureAcceptedFiles.splice(
         0,
         additionalPictureAcceptedFiles.length
@@ -248,6 +319,8 @@ export default function PickupModal({
             setFormData((prev) => ({ ...prev, date: e.target.value }));
           }}
         />
+        <Text scale="s">Pictures</Text>
+        {Object.keys(assetPictures).map((key, index) => showInput(key, index))}
         {/* <Text scale="s">Asset Picture</Text>
         <div
           {...getRootProps({ className: "dropzone" })}
@@ -266,7 +339,7 @@ export default function PickupModal({
             {assetPictureStepMap.get(assetPictureStep.toString())}
           </Text>
         </div> */}
-        <Text scale="s">Add Pictures</Text>
+        <Text scale="s">Additional Pictures</Text>
         <div
           {...additionalPictureGetRootProps({ className: "dropzone" })}
           style={{
