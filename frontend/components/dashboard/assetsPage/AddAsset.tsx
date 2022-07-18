@@ -8,7 +8,7 @@ import { v4 } from "uuid";
 import { createNewAsset } from "../../../lib/api";
 import { useDispatch } from "react-redux";
 import { setAssetsChanged } from "../../../lib/slices/assetSlice";
-import { ENGINE, STATUS } from "../../../lib/models/assetEnum";
+import { ASSET_PICK_DROP, ENGINE, STATUS } from "../../../lib/models/assetEnum";
 
 type Props = {
   openModal: boolean;
@@ -53,8 +53,9 @@ function AddAsset({ openModal, setOpen }: Props) {
       table: [
         {
           date: new Date().toString(),
-          status: "Asset created",
+          status: ASSET_PICK_DROP.ASSET_CREATED,
           destination: "",
+          confirmed: false,
         },
       ],
       engine: ENGINE.STOPED,

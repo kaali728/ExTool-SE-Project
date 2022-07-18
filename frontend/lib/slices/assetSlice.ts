@@ -1,4 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { RootState } from "lib/store";
 import { AssetType } from "types/global";
 
@@ -10,6 +11,13 @@ export type AssetsState = {
     filteredAssets: Array<AssetType>;
   };
 };
+
+export type AssetTableObject = {
+  date: string;
+  destination: string;
+  status: ASSET_PICK_DROP.ASSET_CREATED |ASSET_PICK_DROP.DROPEDOFF | ASSET_PICK_DROP.DROP_OFF | ASSET_PICK_DROP.PICKEDUP | ASSET_PICK_DROP.PICKUP;
+  confirmed: boolean;
+}
 
 const initialState: AssetsState = {
   content: {

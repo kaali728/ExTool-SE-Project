@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { isValidElement, useEffect, useState } from "react";
 
 import {
   createTable,
@@ -11,7 +11,7 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { makeData, Person } from "./makeData";
-import { Button, Flex, Icon, Text } from "@findnlink/neuro-ui";
+import { Button, DropDown, Flex, Icon, Text, Input } from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
 import {
   FiArrowLeft,
@@ -23,6 +23,8 @@ import { FaArrowLeft } from "react-icons/fa";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector } from "lib/slices/assetSlice";
+import { ASSET_PICK_DROP } from "lib/models/assetEnum";
+import { dispatch } from "react-hot-toast/dist/core/store";
 
 let table = createTable()
   .setRowType<Person>()
@@ -80,28 +82,6 @@ function useSkipper() {
 export default function Table({ _data }: { _data: any }) {
   //const rerender = React.useReducer(() => ({}), {})[1];
 
-  const columns = React.useMemo(
-    () => [
-      table.createDataColumn((row) => row.date, {
-        id: "date",
-        header: () => <span>Date</span>,
-        footer: (props) => props.column.id,
-      }),
-      table.createDataColumn((row) => row.status, {
-        id: "status",
-        header: () => <span>Status</span>,
-        footer: (props) => props.column.id,
-        size: 10,
-      }),
-      table.createDataColumn((row) => row.destination, {
-        id: "destination",
-        header: () => <span>Destination</span>,
-        footer: (props) => props.column.id,
-      }),
-    ],
-    []
-  );
-
   useEffect(() => {
     instance.setPageSize(Number(20));
   }, []);
@@ -114,6 +94,65 @@ export default function Table({ _data }: { _data: any }) {
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
 
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+
+  const columns = React.useMemo(
+    () => [
+      table.createDataColumn((row) => row.date, {
+        id: "date",
+        header: () => <span>Date</span>,
+        footer: (props) => props.column.id,
+        cell: ({ cell }) => (
+          <Input
+            onChange={(e) =>
+              instance.options.meta?.updateData(
+                cell.row.index,
+                "date",
+                e.target.value
+              )
+            }
+            value={cell.getValue()}
+            type={"datetime-local"}
+            id={"input"}
+          />
+        ),
+      }),
+      table.createDataColumn((row) => row.status, {
+        id: "status",
+        header: () => <span>Status</span>,
+        cell: ({ cell }) => (
+          <select
+            onChange={(e) =>
+              instance.options.meta?.updateData(
+                cell.row.index,
+                "status",
+                e.target.value
+              )
+            }
+            value={cell.getValue() === "" ? "Select" : cell.getValue()}
+          >
+            <option value={"Select"}>Select</option>
+            <option value={ASSET_PICK_DROP.PICKUP}>
+              {ASSET_PICK_DROP.PICKUP}
+            </option>
+            <option value={ASSET_PICK_DROP.DROP_OFF}>
+              {ASSET_PICK_DROP.DROP_OFF}
+            </option>
+            <option value={ASSET_PICK_DROP.DROP_OFF}>
+              {ASSET_PICK_DROP.ASSET_CREATED}
+            </option>
+          </select>
+        ),
+        footer: (props) => props.column.id,
+        size: 10,
+      }),
+      table.createDataColumn((row) => row.destination, {
+        id: "destination",
+        header: () => <span>Destination</span>,
+        footer: (props) => props.column.id,
+      }),
+    ],
+    []
+  );
 
   const instance = useTableInstance(table, {
     data,
@@ -148,9 +187,9 @@ export default function Table({ _data }: { _data: any }) {
     setData(selectedAsset?.table);
   }, [selectedAsset]);
 
-  const addNewColoumn = () => {
+  const addNewRow = () => {
     setData((prev: any) => [
-      { date: "", status: "", destination: "" },
+      { date: "", status: "", destination: "", confirmed: false },
       ...prev,
     ]);
   };
@@ -180,7 +219,7 @@ export default function Table({ _data }: { _data: any }) {
           Delivery Schedule
         </Text>
         <div>
-          <Button onClick={addNewColoumn}>Add</Button>
+          <Button onClick={addNewRow}>Add</Button>
           {showSaveButton && (
             <Button primary onClick={save} margin="0">
               Save
@@ -278,12 +317,11 @@ function Filter({
   const columnFilterValue = column.getFilterValue();
 
   return column.id === "date" ? (
-    <input
+    <Input
       type="date"
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
       placeholder={`Search...`}
-      className="w-36 border shadow rounded"
     />
   ) : (
     <input

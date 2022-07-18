@@ -11,6 +11,7 @@ import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  AssetTableObject,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
@@ -53,6 +54,24 @@ export default function DropoffModal({
   const [formData, setFormData] = useState({ address: "", date: "" });
   const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
   const selectedAsset = useSelector(selectedAssetSelector);
+  const [nextDropOff, setNextDropOff] = useState<{
+    date: string;
+    destination: string;
+  } | null>();
+
+  useEffect(() => {
+    const findedPickup = selectedAsset?.table.find(
+      (value: AssetTableObject) => {
+        if (value.status === ASSET_PICK_DROP.DROP_OFF) {
+          return { ...value };
+        }
+      }
+    );
+    setNextDropOff({
+      date: findedPickup?.date,
+      destination: findedPickup?.destination,
+    });
+  }, [selectedAsset]);
 
   const submit = async () => {
     if (
@@ -147,66 +166,49 @@ export default function DropoffModal({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={() => {
-        setOpen(false);
-      }}
-      type="confirm"
-      onConfirm={async () => {
-        const modalOpen = await submit();
-        setOpen(modalOpen);
-      }}
-    >
-      <Text weight="bold" scale="xl">
-        Dropoff
-      </Text>
-      <Flex>
-        <Text scale="s">Address</Text>
-        <Input
-          scale="l"
-          name={"pickup-address"}
-          placeholder="Address"
-          value={formData.address}
-          onChange={(e) => {
-            setFormData((prev) => ({ ...prev, address: e.target.value }));
-          }}
-          margin="0 0 m 0"
-        />
-        <Text scale="s">Date</Text>
-        <Input
-          scale="l"
-          margin="0 0 m 0"
-          type={"date"}
-          value={formData.date}
-          id="pickup-date"
-          name="pickup-date"
-          onChange={(e) => {
-            setFormData((prev) => ({ ...prev, date: e.target.value }));
-          }}
-        />
-        <Text scale="s">Pictures</Text>
-        <div
-          {...getRootProps({ className: "dropzone" })}
-          style={{
-            border: "2px dashed var(--text300)",
-            padding: "10px",
-            borderRadius: "var(--borderRadius)",
-          }}
-        >
-          <input {...getInputProps()} />
-          <Text padding="xl" align="center">
-            Drag 'n' drop, or click to select files
-          </Text>
-        </div>
-        {images.length > 0 && (
-          <ImageGallery margin="xl 0" showPaginate>
-            {images.map((image: any, index: number) => (
-              <Image key={index} src={image.src} />
-            ))}
-          </ImageGallery>
-        )}
-      </Flex>
-    </Modal>
+    nextDropOff && (
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        type="confirm"
+        onConfirm={async () => {
+          const modalOpen = await submit();
+          setOpen(modalOpen);
+        }}
+      >
+        <Text weight="bold" scale="xl">
+          Dropoff
+        </Text>
+        <Flex>
+          <Text scale="s">Address</Text>
+          <Text weight="bold">{nextDropOff.destination}</Text>
+          <Text scale="s">Date</Text>
+          <Text weight="bold">{nextDropOff.date}</Text>
+          <Text scale="s">Pictures</Text>
+          <div
+            {...getRootProps({ className: "dropzone" })}
+            style={{
+              border: "2px dashed var(--text300)",
+              padding: "10px",
+              borderRadius: "var(--borderRadius)",
+            }}
+          >
+            <input {...getInputProps()} />
+            <Text padding="xl" align="center">
+              Drag 'n' drop, or click to select files
+            </Text>
+          </div>
+          {images.length > 0 && (
+            <ImageGallery margin="xl 0" showPaginate>
+              {images.map((image: any, index: number) => (
+                <Image key={index} src={image.src} />
+              ))}
+            </ImageGallery>
+          )}
+        </Flex>
+      </Modal>
+    )
   );
 }

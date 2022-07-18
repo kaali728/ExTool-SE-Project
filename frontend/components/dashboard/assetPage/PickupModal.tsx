@@ -12,12 +12,13 @@ import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  AssetTableObject,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage, STATE_CHANGED } from "../../../lib/firebase";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
@@ -174,6 +175,24 @@ export default function PickupModal({
   const [formData, setFormData] = useState({ address: "", date: "" });
   const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
   const selectedAsset = useSelector(selectedAssetSelector);
+  const [nextPickUp, setNextPickUp] = useState<{
+    date: string;
+    destination: string;
+  } | null>();
+
+  useEffect(() => {
+    const findedPickup = selectedAsset?.table.find(
+      (value: AssetTableObject) => {
+        if (value.status === ASSET_PICK_DROP.PICKUP) {
+          return { ...value };
+        }
+      }
+    );
+    setNextPickUp({
+      date: findedPickup?.date,
+      destination: findedPickup?.destination,
+    });
+  }, [selectedAsset]);
 
   const submit = async () => {
     if (formData.address.length === 0 || formData.date.length === 0) {
@@ -181,13 +200,14 @@ export default function PickupModal({
       return true;
     }
 
-    const downloadUrls = await uploadFiles(images);
+    const downloadUrls = await uploadFiles(additionalPictureAcceptedFiles);
 
     if (downloadUrls == undefined) {
       toast.error("Could not upload Images!");
       return true;
     }
 
+    //TODO: Die status auf PICKED_UP setzen und die confirm auf true
     dispatch(
       updateSelectedAssetTable({
         tableContent: {
@@ -235,43 +255,39 @@ export default function PickupModal({
       contentType: "image/jpeg",
     };
 
-    let urls = additionalPictureAcceptedFiles.map(
-      async (image, index: number) => {
-        const storageRef = ref(
-          storage,
-          `assets/${selectedAsset?.name}/images/pick-up-${
-            formData.date
-          }-${v4()}`
-        );
-        const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+    let urls = files.map(async (image: any, index: number) => {
+      const storageRef = ref(
+        storage,
+        `assets/${selectedAsset?.name}/images/pickups/pick-up-${
+          formData.date
+        }-${v4()}`
+      );
+      const uploadTask = uploadBytesResumable(storageRef, image, metadata);
 
-        uploadTask.on(
-          STATE_CHANGED,
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-          },
-          (error) => {
-            switch (error.code) {
-              case "storage/unauthorized":
-                // User doesn't have permission to access the object
-                toast.error(
-                  "User doesn't have permission to access the object"
-                );
-                break;
-              case "storage/canceled":
-                // User canceled the upload
-                toast.error("User canceled the upload");
-                break;
-            }
+      uploadTask.on(
+        STATE_CHANGED,
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          switch (error.code) {
+            case "storage/unauthorized":
+              // User doesn't have permission to access the object
+              toast.error("User doesn't have permission to access the object");
+              break;
+            case "storage/canceled":
+              // User canceled the upload
+              toast.error("User canceled the upload");
+              break;
           }
-        );
-        await uploadTask;
-        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        return downloadUrl;
-      }
-    );
+        }
+      );
+      await uploadTask;
+      const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+      return downloadUrl;
+    });
 
     let _downloadUrls = Promise.all(urls).then(function (results) {
       return results;
@@ -281,86 +297,54 @@ export default function PickupModal({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={() => {
-        setOpen(false);
-      }}
-      type="confirm"
-      onConfirm={async () => {
-        const modalOpen = await submit();
-        setOpen(modalOpen);
-      }}
-    >
-      <Text weight="bold" scale="xl">
-        Pickup
-      </Text>
-      <Flex>
-        <Text scale="s">Address</Text>
-        <Input
-          scale="l"
-          name={"pickup-address"}
-          placeholder="Address"
-          value={formData.address}
-          onChange={(e) => {
-            setFormData((prev) => ({ ...prev, address: e.target.value }));
-          }}
-          margin="0 0 m 0"
-        />
-        <Text scale="s">Date</Text>
-        <Input
-          scale="l"
-          margin="0 0 m 0"
-          type={"date"}
-          value={formData.date}
-          id="pickup-date"
-          name="pickup-date"
-          onChange={(e) => {
-            setFormData((prev) => ({ ...prev, date: e.target.value }));
-          }}
-        />
-        <Text scale="s">Pictures</Text>
-        {Object.keys(assetPictures).map((key, index) => showInput(key, index))}
-        {/* <Text scale="s">Asset Picture</Text>
-        <div
-          {...getRootProps({ className: "dropzone" })}
-          style={{
-            border: "2px dashed var(--text300)",
-            padding: "10px",
-            borderRadius: "var(--borderRadius)",
-          }}
-        >
-          <input {...getInputProps()} />
-          <Text padding="xl" align="center">
-            Drop a picture of:
-          </Text>
-          <Text weight="bold" padding="xl" align="center">
-            {assetPictureStep}.{" "}
-            {assetPictureStepMap.get(assetPictureStep.toString())}
-          </Text>
-        </div> */}
-        <Text scale="s">Additional Pictures</Text>
-        <div
-          {...additionalPictureGetRootProps({ className: "dropzone" })}
-          style={{
-            border: "2px dashed var(--text300)",
-            padding: "10px",
-            borderRadius: "var(--borderRadius)",
-          }}
-        >
-          <input {...additionalPictureGetInputProps()} />
-          <Text padding="xl" align="center">
-            Drag 'n' drop, or click to select files
-          </Text>
-        </div>
-        {images.length > 0 && (
-          <ImageGallery margin="xl 0" showPaginate>
-            {images.map((image: any, index: number) => (
-              <Image key={index} src={image.src} />
-            ))}
-          </ImageGallery>
-        )}
-      </Flex>
-    </Modal>
+    nextPickUp?.destination && (
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        type="confirm"
+        onConfirm={async () => {
+          const modalOpen = await submit();
+          setOpen(modalOpen);
+        }}
+      >
+        <Text weight="bold" scale="xl">
+          Pickup
+        </Text>
+        <Flex>
+          <Text scale="s">Address</Text>
+          <Text weight="bold">{nextPickUp?.destination}</Text>
+          <Text scale="s">Date</Text>
+          <Text weight="bold">{nextPickUp?.date}</Text>
+          <Text scale="s">Pictures</Text>
+          {Object.keys(assetPictures).map((key, index) => {
+            //TODO: hier macht showInput eine fehler, wenn man auskommentiert kommt es
+            //showInput(key, index);
+          })}
+          <Text scale="s">Additional Pictures</Text>
+          <div
+            {...additionalPictureGetRootProps({ className: "dropzone" })}
+            style={{
+              border: "2px dashed var(--text300)",
+              padding: "10px",
+              borderRadius: "var(--borderRadius)",
+            }}
+          >
+            <input {...additionalPictureGetInputProps()} />
+            <Text padding="xl" align="center">
+              Drag 'n' drop, or click to select files
+            </Text>
+          </div>
+          {images.length > 0 && (
+            <ImageGallery margin="xl 0" showPaginate>
+              {images.map((image: any, index: number) => (
+                <Image key={index} src={image.src} />
+              ))}
+            </ImageGallery>
+          )}
+        </Flex>
+      </Modal>
+    )
   );
 }
