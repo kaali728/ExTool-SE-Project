@@ -137,7 +137,7 @@ export default function Table({ _data }: { _data: any }) {
             <option value={ASSET_PICK_DROP.DROP_OFF}>
               {ASSET_PICK_DROP.DROP_OFF}
             </option>
-            <option value={ASSET_PICK_DROP.DROP_OFF}>
+            <option value={ASSET_PICK_DROP.ASSET_CREATED}>
               {ASSET_PICK_DROP.ASSET_CREATED}
             </option>
           </select>

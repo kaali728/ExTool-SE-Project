@@ -6,6 +6,7 @@ import {
   Flex,
   ImageGallery,
   Icon,
+  TextArea,
 } from "@findnlink/neuro-ui";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -99,7 +100,7 @@ export default function PickupModal({
     []
   );
 
-  const showInput = (name: string, index: number) => {
+  const ShowInput = ({ name, index }: { name: string; index: number }) => {
     const ref = useRef(null);
 
     const remove = () => {
@@ -172,7 +173,15 @@ export default function PickupModal({
     onDrop: onDropAdditional,
   });
 
-  const [formData, setFormData] = useState({ address: "", date: "" });
+  const [formData, setFormData] = useState({
+    address: "",
+    date: "",
+    report: "",
+    officeNotes: "",
+    officeNotesAccept: false,
+    diesel: "0",
+    hours: "0",
+  });
   const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
   const selectedAsset = useSelector(selectedAssetSelector);
   const [nextPickUp, setNextPickUp] = useState<{
@@ -193,6 +202,15 @@ export default function PickupModal({
       destination: findedPickup?.destination,
     });
   }, [selectedAsset]);
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const submit = async () => {
     if (formData.address.length === 0 || formData.date.length === 0) {
@@ -230,7 +248,15 @@ export default function PickupModal({
       }
 
       setImages([]);
-      setFormData({ address: "", date: "" });
+      setFormData({
+        address: "",
+        date: "",
+        report: "",
+        officeNotes: "",
+        officeNotesAccept: false,
+        diesel: "0",
+        hours: "0",
+      });
       setAssetPictures({
         front: null,
         rightSide: null,
@@ -313,14 +339,19 @@ export default function PickupModal({
           Pickup
         </Text>
         <Flex>
-          <Text scale="s">Address</Text>
+          <Text margin="xl 0 m 0" scale="s">
+            Address
+          </Text>
           <Text weight="bold">{nextPickUp?.destination}</Text>
-          <Text scale="s">Date</Text>
+          <Text margin="xl 0 m 0" scale="s">
+            Date
+          </Text>
           <Text weight="bold">{nextPickUp?.date}</Text>
-          <Text scale="s">Pictures</Text>
+          <Text margin="xl 0 m 0" scale="s">
+            Pictures
+          </Text>
           {Object.keys(assetPictures).map((key, index) => {
-            //TODO: hier macht showInput eine fehler, wenn man auskommentiert kommt es
-            //showInput(key, index);
+            return <ShowInput key={key} name={key} index={index} />;
           })}
           <Text scale="s">Additional Pictures</Text>
           <div
@@ -343,6 +374,48 @@ export default function PickupModal({
               ))}
             </ImageGallery>
           )}
+
+          <Text margin="xl 0 m 0" scale="s">
+            Pick up report
+          </Text>
+          <textarea
+            name="report"
+            value={formData.report}
+            onChange={handleChange}
+          />
+
+          <Text margin="xl 0 m 0" scale="s">
+            Diesel Reading
+          </Text>
+
+          <Flex
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <input
+              style={{ width: "100%" }}
+              name="diesel"
+              value={formData.diesel}
+              onChange={handleChange}
+              type="range"
+              min="0"
+              max="25"
+            />
+
+            <Text
+              style={{ width: "30px" }}
+              weight="bold"
+              scale="m"
+              align="right"
+            >
+              {formData.diesel}L
+            </Text>
+          </Flex>
+          <Text margin="xl 0 m 0" scale="s">
+            Hours Reading
+          </Text>
+          <Input name="hours" value={formData.hours} onChange={handleChange} />
         </Flex>
       </Modal>
     )
