@@ -24,7 +24,6 @@ import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector } from "lib/slices/assetSlice";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
-import { dispatch } from "react-hot-toast/dist/core/store";
 
 let table = createTable()
   .setRowType<Person>()
@@ -102,7 +101,7 @@ export default function Table({ _data }: { _data: any }) {
         header: () => <span>Date</span>,
         footer: (props) => props.column.id,
         cell: ({ cell }) => (
-          <Input
+          <input
             onChange={(e) =>
               instance.options.meta?.updateData(
                 cell.row.index,
@@ -317,7 +316,7 @@ function Filter({
   const columnFilterValue = column.getFilterValue();
 
   return column.id === "date" ? (
-    <Input
+    <input
       type="date"
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}

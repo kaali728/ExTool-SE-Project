@@ -15,9 +15,14 @@ export type AssetsState = {
 export type AssetTableObject = {
   date: string;
   destination: string;
-  status: ASSET_PICK_DROP.ASSET_CREATED |ASSET_PICK_DROP.DROPEDOFF | ASSET_PICK_DROP.DROP_OFF | ASSET_PICK_DROP.PICKEDUP | ASSET_PICK_DROP.PICKUP;
+  status:
+    | ASSET_PICK_DROP.ASSET_CREATED
+    | ASSET_PICK_DROP.DROPEDOFF
+    | ASSET_PICK_DROP.DROP_OFF
+    | ASSET_PICK_DROP.PICKEDUP
+    | ASSET_PICK_DROP.PICKUP;
   confirmed: boolean;
-}
+};
 
 const initialState: AssetsState = {
   content: {
@@ -58,6 +63,11 @@ export const assetSlice = createSlice({
           status: string;
           destination: string;
           images: string[];
+          diesel: number;
+          hours: number;
+          officeNotes: string;
+          officeNotesAccept: boolean;
+          report: string;
         };
       }>
     ) {

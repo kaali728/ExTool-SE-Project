@@ -34,7 +34,11 @@
     font-weight: normal;
   }
 
-  select{
+  select {
+    width: 100%;
+  }
+
+  input[type="date"] {
     width: 100%;
   }
 }

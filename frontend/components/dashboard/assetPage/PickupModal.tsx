@@ -6,7 +6,6 @@ import {
   Flex,
   ImageGallery,
   Icon,
-  TextArea,
 } from "@findnlink/neuro-ui";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -33,9 +32,18 @@ export default function PickupModal({
   setOpen: (arg: boolean) => any;
   data: any;
 }) {
-  const [images, setImages] = useState([]);
   const dispatch = useDispatch();
-
+  const [formData, setFormData] = useState({
+    destination: "",
+    date: "",
+    report: "",
+    officeNotes:
+      "Please don't forget to pick up the attachments with the machine.",
+    officeNotesAccept: false,
+    diesel: 0,
+    hours: 0,
+  });
+  const [images, setImages] = useState([]);
   const [assetPictures, setAssetPictures] = useState({
     front: null,
     rightSide: null,
@@ -43,45 +51,9 @@ export default function PickupModal({
     back: null,
     fuelGuage: null,
     hoursReading: null,
-  });
-  // const [assetPictureStepMap, setAssetPictureStepMap] = useState(
-  //   new Map([
-  //     ["1", "front"],
-  //     ["2", "rightSide"],
-  //     ["3", "leftSide"],
-  //     ["4", "back"],
-  //     ["5", "fuelGuage"],
-  //     ["6", "hoursReading"],
-  //   ])
-  // );
-  // const [assetPictureStep, setAssetPictureStep] = useState(1);
-
-  // const onDropAssetPictures = useCallback((acceptedFiles: any[]) => {
-  //   const assetSide = assetPictureStepMap.get(assetPictureStep.toString());
-  //   if (assetSide == undefined) return;
-
-  //   acceptedFiles.map((file, index) => {
-  //     const reader = new FileReader();
-  //     reader.onload = function (e) {
-  //       setImages((prevState): any => [
-  //         ...prevState,
-  //         { id: index, src: e.target!.result },
-  //       ]);
-  //     };
-  //     reader.readAsDataURL(file);
-  //     setAssetPictures((prev): any => ({
-  //       ...prev,
-  //       [assetSide]: file,
-  //     }));
-  //     if (assetPictureStep < 6) {
-  //       setAssetPictureStep((prev): number => prev + 1);
-  //     } else {
-  //       setAssetPictureStep((prev): number => 1);
-  //     }
-  //     console.log(assetPictures);
-  //     return file;
-  //   });
-  // }, []);
+  }) as any;
+  const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
+  const selectedAsset = useSelector(selectedAssetSelector);
 
   const onDropAdditional = useCallback(
     (additionalPictureAcceptedFiles: any[]) => {
@@ -100,71 +72,6 @@ export default function PickupModal({
     []
   );
 
-  const ShowInput = ({ name, index }: { name: string; index: number }) => {
-    const ref = useRef(null);
-
-    const remove = () => {
-      setAssetPictures((prev) => ({ ...prev, [name]: null }));
-      if (ref.current) {
-        ref.current.value = "";
-      }
-    };
-
-    const setPicture = (e: any) => {
-      setAssetPictures((prev) => ({ ...prev, [name]: ref.current.files[0] }));
-    };
-
-    return (
-      <Flex
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Icon
-          style={assetPictures[name] ? {} : { visibility: "hidden" }}
-          padding="m"
-          pointer
-          icon="cross"
-          onClick={() => remove()}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Text margin="0 l 0 0">{name}:</Text>
-          <img
-            src={
-              assetPictures[name]
-                ? URL.createObjectURL(assetPictures[name])
-                : ""
-            }
-            width={40}
-            height={40}
-            style={
-              assetPictures[name]
-                ? { borderRadius: "5px", margin: "5px", objectFit: "cover" }
-                : { display: "none" }
-            }
-          ></img>
-        </div>
-        <input
-          style={{ width: "200px", backgroundColor: "var(--bg300)" }}
-          ref={ref}
-          type="file"
-          onChange={setPicture}
-        ></input>
-      </Flex>
-    );
-  };
-
-  // const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-  //   onDrop: onDropAssetPictures,
-  // });
   const {
     acceptedFiles: additionalPictureAcceptedFiles,
     getRootProps: additionalPictureGetRootProps,
@@ -172,22 +79,6 @@ export default function PickupModal({
   } = useDropzone({
     onDrop: onDropAdditional,
   });
-
-  const [formData, setFormData] = useState({
-    address: "",
-    date: "",
-    report: "",
-    officeNotes: "",
-    officeNotesAccept: false,
-    diesel: "0",
-    hours: "0",
-  });
-  const [tableSaveToggle, setTableSaveToggle] = useState<boolean>(false);
-  const selectedAsset = useSelector(selectedAssetSelector);
-  const [nextPickUp, setNextPickUp] = useState<{
-    date: string;
-    destination: string;
-  } | null>();
 
   useEffect(() => {
     const findedPickup = selectedAsset?.table.find(
@@ -197,78 +88,44 @@ export default function PickupModal({
         }
       }
     );
-    setNextPickUp({
+
+    setFormData((prev) => ({
+      ...prev,
       date: findedPickup?.date,
-      destination: findedPickup?.destination,
-    });
+      address: findedPickup?.destination,
+    }));
   }, [selectedAsset]);
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const submit = async () => {
-    if (formData.address.length === 0 || formData.date.length === 0) {
-      toast.error("You have to give an address and a date");
-      return true;
-    }
-
-    const downloadUrls = await uploadFiles(additionalPictureAcceptedFiles);
-
-    if (downloadUrls == undefined) {
-      toast.error("Could not upload Images!");
-      return true;
-    }
-
-    //TODO: Die status auf PICKED_UP setzen und die confirm auf true
-    dispatch(
-      updateSelectedAssetTable({
-        tableContent: {
-          date: formData.date,
-          destination: formData.address,
-          status: ASSET_PICK_DROP.PICKUP,
-          images: downloadUrls,
-        },
-      })
-    );
-    setTableSaveToggle(true);
-    return false;
-  };
 
   useAsyncEffect(
     async (stopped) => {
       if (tableSaveToggle) {
         await updateTable(selectedAsset?.id, selectedAsset?.table);
         setTableSaveToggle(false);
-      }
 
-      setImages([]);
-      setFormData({
-        address: "",
-        date: "",
-        report: "",
-        officeNotes: "",
-        officeNotesAccept: false,
-        diesel: "0",
-        hours: "0",
-      });
-      setAssetPictures({
-        front: null,
-        rightSide: null,
-        leftSide: null,
-        back: null,
-        fuelGuage: null,
-        hoursReading: null,
-      });
-      additionalPictureAcceptedFiles.splice(
-        0,
-        additionalPictureAcceptedFiles.length
-      );
+        setImages([]);
+        setFormData({
+          destination: "",
+          date: "",
+          report: "",
+          officeNotes:
+            "Please don't forget to pick up the attachments with the machine.",
+          officeNotesAccept: false,
+          diesel: 0,
+          hours: 0,
+        });
+        setAssetPictures({
+          front: null,
+          rightSide: null,
+          leftSide: null,
+          back: null,
+          fuelGuage: null,
+          hoursReading: null,
+        });
+        additionalPictureAcceptedFiles.splice(
+          0,
+          additionalPictureAcceptedFiles.length
+        );
+      }
 
       if (stopped()) return;
     },
@@ -322,102 +179,240 @@ export default function PickupModal({
     return _downloadUrls;
   }
 
-  return (
-    nextPickUp?.destination && (
-      <Modal
-        open={open}
-        onClose={() => {
-          setOpen(false);
-        }}
-        type="confirm"
-        onConfirm={async () => {
-          const modalOpen = await submit();
-          setOpen(modalOpen);
-        }}
-      >
-        <Text weight="bold" scale="xl">
-          Pickup
-        </Text>
-        <Flex>
-          <Text margin="xl 0 m 0" scale="s">
-            Address
-          </Text>
-          <Text weight="bold">{nextPickUp?.destination}</Text>
-          <Text margin="xl 0 m 0" scale="s">
-            Date
-          </Text>
-          <Text weight="bold">{nextPickUp?.date}</Text>
-          <Text margin="xl 0 m 0" scale="s">
-            Pictures
-          </Text>
-          {Object.keys(assetPictures).map((key, index) => {
-            return <ShowInput key={key} name={key} index={index} />;
-          })}
-          <Text scale="s">Additional Pictures</Text>
-          <div
-            {...additionalPictureGetRootProps({ className: "dropzone" })}
-            style={{
-              border: "2px dashed var(--text300)",
-              padding: "10px",
-              borderRadius: "var(--borderRadius)",
-            }}
-          >
-            <input {...additionalPictureGetInputProps()} />
-            <Text padding="xl" align="center">
-              Drag 'n' drop, or click to select files
-            </Text>
-          </div>
-          {images.length > 0 && (
-            <ImageGallery margin="xl 0" showPaginate>
-              {images.map((image: any, index: number) => (
-                <Image key={index} src={image.src} />
-              ))}
-            </ImageGallery>
-          )}
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
-          <Text margin="xl 0 m 0" scale="s">
-            Pick up report
+  const handleChange = (e: any) => {
+    const { name, value, checked } = e.target;
+
+    switch (name) {
+      case "diesel":
+      case "hours": {
+        setFormData((prev) => ({ ...prev, [name]: parseInt(value) }));
+        break;
+      }
+      case "officeNotesAccept": {
+        setFormData((prev) => ({ ...prev, [name]: checked }));
+        break;
+      }
+      default: {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        break;
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.officeNotesAccept) {
+      toast.error("Accept the office note!");
+      return true;
+    }
+
+    const downloadUrls = await uploadFiles(additionalPictureAcceptedFiles);
+
+    if (downloadUrls == undefined) {
+      toast.error("Could not upload Images!");
+      return true;
+    }
+
+    //TODO: Die status auf PICKED_UP setzen und die confirm auf true
+    dispatch(
+      updateSelectedAssetTable({
+        tableContent: {
+          date: formData.date,
+          destination: formData.destination,
+          status: ASSET_PICK_DROP.PICKUP,
+          images: downloadUrls,
+          diesel: formData.diesel,
+          hours: formData.hours,
+          officeNotes: formData.officeNotes,
+          officeNotesAccept: formData.officeNotesAccept,
+          report: formData.report,
+        },
+      })
+    );
+    setTableSaveToggle(true);
+    return false;
+  };
+
+  const ShowPictureInput = ({
+    name,
+    index,
+  }: {
+    name: string;
+    index: number;
+  }) => {
+    const ref = useRef(null) as any;
+
+    const remove = () => {
+      setAssetPictures((prev: any) => ({ ...prev, [name]: null }));
+      if (ref.current) {
+        ref.current.value = "";
+      }
+    };
+
+    const setPicture = (e: any) => {
+      setAssetPictures((prev: any) => ({
+        ...prev,
+        [name]: ref.current.files[0],
+      }));
+    };
+
+    return (
+      <Flex
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Icon
+          style={assetPictures[name] ? {} : { visibility: "hidden" }}
+          padding="m"
+          pointer
+          icon="cross"
+          onClick={() => remove()}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Text margin="0 l 0 0">{name}:</Text>
+          <img
+            src={
+              assetPictures[name]
+                ? URL.createObjectURL(assetPictures[name])
+                : ""
+            }
+            width={40}
+            height={40}
+            style={
+              assetPictures[name]
+                ? { borderRadius: "5px", margin: "5px", objectFit: "cover" }
+                : { display: "none" }
+            }
+          ></img>
+        </div>
+        <input
+          style={{ width: "200px", backgroundColor: "var(--bg300)" }}
+          ref={ref}
+          type="file"
+          onChange={setPicture}
+        ></input>
+      </Flex>
+    );
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={() => {
+        setOpen(false);
+      }}
+      type="confirm"
+      onConfirm={async () => {
+        const modalOpen = await handleSubmit();
+        setOpen(modalOpen);
+      }}
+    >
+      <Text weight="bold" scale="xl">
+        Pickup
+      </Text>
+      <Flex>
+        <Text margin="xl 0 m 0" scale="s">
+          Address
+        </Text>
+        <Text weight="bold">{formData.destination}</Text>
+        <Text margin="xl 0 m 0" scale="s">
+          Date
+        </Text>
+        <Text weight="bold">{formData.date}</Text>
+        <Text margin="xl 0 m 0" scale="s">
+          Pictures
+        </Text>
+        {Object.keys(assetPictures).map((key, index) => {
+          return <ShowPictureInput key={key} name={key} index={index} />;
+        })}
+        <Text scale="s">Additional Pictures</Text>
+        <div
+          {...additionalPictureGetRootProps({ className: "dropzone" })}
+          style={{
+            border: "2px dashed var(--text300)",
+            padding: "10px",
+            borderRadius: "var(--borderRadius)",
+          }}
+        >
+          <input {...additionalPictureGetInputProps()} />
+          <Text padding="xl" align="center">
+            Drag 'n' drop, or click to select files
           </Text>
-          <textarea
-            name="report"
-            value={formData.report}
+        </div>
+        {images.length > 0 && (
+          <ImageGallery margin="xl 0" showPaginate>
+            {images.map((image: any, index: number) => (
+              <Image key={index} src={image.src} />
+            ))}
+          </ImageGallery>
+        )}
+
+        <Text margin="xl 0 m 0" scale="s">
+          Pick up report
+        </Text>
+        <textarea
+          name="report"
+          value={formData.report}
+          onChange={handleChange}
+        />
+
+        <Text margin="xl 0 m 0" scale="s">
+          Diesel Reading
+        </Text>
+
+        <Flex
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <input
+            style={{ width: "100%" }}
+            name="diesel"
+            value={formData.diesel}
             onChange={handleChange}
+            type="range"
+            min="0"
+            max="25"
           />
 
-          <Text margin="xl 0 m 0" scale="s">
-            Diesel Reading
+          <Text style={{ width: "30px" }} weight="bold" scale="m" align="right">
+            {formData.diesel}L
           </Text>
-
-          <Flex
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <input
-              style={{ width: "100%" }}
-              name="diesel"
-              value={formData.diesel}
-              onChange={handleChange}
-              type="range"
-              min="0"
-              max="25"
-            />
-
-            <Text
-              style={{ width: "30px" }}
-              weight="bold"
-              scale="m"
-              align="right"
-            >
-              {formData.diesel}L
-            </Text>
-          </Flex>
-          <Text margin="xl 0 m 0" scale="s">
-            Hours Reading
-          </Text>
-          <Input name="hours" value={formData.hours} onChange={handleChange} />
         </Flex>
-      </Modal>
-    )
+        <Text margin="xl 0 m 0" scale="s">
+          Hours Reading
+        </Text>
+        <Input
+          name="hours"
+          type={"number"}
+          value={formData.hours}
+          onChange={handleChange}
+        />
+        <Flex flexDirection="row" margin="xl 0 0 0">
+          <input
+            type="checkbox"
+            name="officeNotesAccept"
+            onClick={handleChange}
+            defaultChecked={formData.officeNotesAccept}
+            id="officeNotesAccept"
+          />
+          <label style={{ marginLeft: "10px" }} htmlFor="officeNotesAccept">
+            {formData.officeNotes}
+          </label>
+        </Flex>
+      </Flex>
+    </Modal>
   );
 }
