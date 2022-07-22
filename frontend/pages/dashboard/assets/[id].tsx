@@ -189,7 +189,7 @@ export default function Asset() {
         </Tabs>
 
         <PickupModal data={data} open={openPickup} setOpen={setOpenPickup} />
-        <DropoffModal data={data} open={openDropoff} setOpen={setOpenDropoff} />
+        {/* <DropoffModal data={data} open={openDropoff} setOpen={setOpenDropoff} /> */}
       </div>
     )
   );

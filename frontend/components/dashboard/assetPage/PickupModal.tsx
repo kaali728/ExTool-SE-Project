@@ -397,7 +397,7 @@ export default function PickupModal({
         <Input
           name="hours"
           type={"number"}
-          value={formData.hours}
+          value={formData.hours.toString()}
           onChange={handleChange}
         />
         <Flex flexDirection="row" margin="xl 0 0 0">

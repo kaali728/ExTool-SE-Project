@@ -10,7 +10,7 @@ function ForgetPassword() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "" });
 
-  const sendEmail = (e) => {
+  const sendEmail = (e: any) => {
     e.preventDefault();
     if (!form.email) {
       return alert("Please enter a Email address");

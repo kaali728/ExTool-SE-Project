@@ -22,7 +22,7 @@ function signup() {
     confirmPassword: "",
   });
 
-  const register = (e) => {
+  const register = (e: any) => {
     e.preventDefault();
     if (!form.name) {
       return toast.error("Please enter a full name");

@@ -90,16 +90,16 @@ export default function DropoffModal({
       return true;
     }
 
-    dispatch(
-      updateSelectedAssetTable({
-        tableContent: {
-          date: formData.date,
-          destination: formData.address,
-          status: ASSET_PICK_DROP.DROP_OFF,
-          images: downloadUrls,
-        },
-      })
-    );
+    // dispatch(
+    //   updateSelectedAssetTable({
+    //     tableContent: {
+    //       date: formData.date,
+    //       destination: formData.address,
+    //       status: ASSET_PICK_DROP.DROP_OFF,
+    //       images: downloadUrls,
+    //     },
+    //   })
+    // );
     setTableSaveToggle(true);
     return false;
   };
