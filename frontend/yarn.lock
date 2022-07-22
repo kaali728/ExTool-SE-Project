@@ -233,13 +233,14 @@
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-6.3.1.tgz#1ae963dd40405450a2945408cba553e1afa3e0fb"
   integrity sha512-8YXBE2ZcU/pImVOHX7MWrSR/X5up7t6rPWZlk34RwZEcdr3ua6X+32pSd6XuOQRN+vbuvYNfA6iey8NbrjuMFQ==
 
-"@findnlink/neuro-ui@^1.0.31":
-  version "1.0.31"
-  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.31.tgz#576ce5d909c585384c317f3494d9d33509b96029"
-  integrity sha512-gWoCvr/z7kywaz4bvtsRXzcSNpFUvLh512iEwAN1oIZUiDUQNgHlvt8DID9sZDNBGaqvOZ0yBacTxCwYQ14Ljg==
+"@findnlink/neuro-ui@^1.0.36":
+  version "1.0.36"
+  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.36.tgz#39ddd0f959b735a483ed83ea9845ae971103388e"
+  integrity sha512-vvC7bDRgv10xuCzU8NXUjznK90qV6J1toRsz3ph2GyGRG6vuqnMdHZPLEXM90t0and1zyCoF0no8un/hi8696g==
   dependencies:
     "@mdx-js/mdx" "1.6.22"
     "@mdx-js/react" "1.6.22"
+    goober "^2.1.10"
     react "^18.1.0"
     react-dom "^18.1.0"
 
@@ -1958,6 +1959,11 @@ goober@^2.1.1:
   version "2.1.9"
   resolved "https://registry.npmjs.org/goober/-/goober-2.1.9.tgz"
   integrity sha512-PAtnJbrWtHbfpJUIveG5PJIB6Mc9Kd0gimu9wZwPyA+wQUSeOeA4x4Ug16lyaaUUKZ/G6QEH1xunKOuXP1F4Vw==
+
+goober@^2.1.10:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.10.tgz#058def43ba1e3b06f973dbb372a4978aa42f1049"
+  integrity sha512-7PpuQMH10jaTWm33sQgBQvz45pHR8N4l3Cu3WMGEWmHShAcTuuP7I+5/DwKo39fwti5A80WAjvqgz6SSlgWmGA==
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
