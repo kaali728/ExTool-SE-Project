@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
+import { AssetTableObject } from "types/global";
 import { firestore } from "./firebase";
 import { ENGINE } from "./models/assetEnum";
 
@@ -20,7 +21,7 @@ export async function createNewAsset(asset: any) {
   return asset;
 }
 
-export async function updateTable(id: any, table: []) {
+export async function updateTable(id: any, table: AssetTableObject[]) {
   const assetDoc = doc(firestore, "assets", id);
 
   await updateDoc(assetDoc, {

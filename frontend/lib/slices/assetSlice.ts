@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { RootState } from "lib/store";
-import { AssetType } from "types/global";
+import { AssetPictureDownloadUrl, AssetTableObject, AssetType } from "types/global";
 
 export type AssetsState = {
   content: {
@@ -12,17 +12,7 @@ export type AssetsState = {
   };
 };
 
-export type AssetTableObject = {
-  date: string;
-  destination: string;
-  status:
-    | ASSET_PICK_DROP.ASSET_CREATED
-    | ASSET_PICK_DROP.DROPEDOFF
-    | ASSET_PICK_DROP.DROP_OFF
-    | ASSET_PICK_DROP.PICKEDUP
-    | ASSET_PICK_DROP.PICKUP;
-  confirmed: boolean;
-};
+
 
 const initialState: AssetsState = {
   content: {
@@ -62,17 +52,32 @@ export const assetSlice = createSlice({
           date: string;
           status: string;
           destination: string;
-          images: string[];
+          images: AssetPictureDownloadUrl;
+          additionalImages: string[];
           diesel: number;
           hours: number;
           officeNotes: string;
           officeNotesAccept: boolean;
           report: string;
+          confirmed: boolean;
         };
       }>
     ) {
-      state.content.selectedAsset?.table.unshift(action.payload.tableContent);
-    },
+      console.log(action.payload.tableContent);
+      if(state.content.selectedAsset === null) return;
+      const index = state.content.selectedAsset.table.findIndex((element: AssetTableObject, index: number) => element.destination === action.payload.tableContent.destination 
+        && element.date === action.payload.tableContent.date
+      )
+      state.content.selectedAsset.table[index].status = action.payload.tableContent.status;
+      state.content.selectedAsset.table[index].images = action.payload.tableContent.images;
+      state.content.selectedAsset.table[index].additionalImages = action.payload.tableContent.additionalImages;
+      state.content.selectedAsset.table[index].diesel = action.payload.tableContent.diesel;
+      state.content.selectedAsset.table[index].hours = action.payload.tableContent.hours;
+      state.content.selectedAsset.table[index].officeNotes = action.payload.tableContent.officeNotes;
+      state.content.selectedAsset.table[index].officeNotesAccept = action.payload.tableContent.officeNotesAccept;
+      state.content.selectedAsset.table[index].report = action.payload.tableContent.report;
+      state.content.selectedAsset.table[index].confirmed = action.payload.tableContent.confirmed;
+  },
   },
 });
 

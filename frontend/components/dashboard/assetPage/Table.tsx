@@ -10,7 +10,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { makeData, Person } from "./makeData";
 import { Button, DropDown, Flex, Icon, Text, Input } from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
 import {
@@ -24,9 +23,12 @@ import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector } from "lib/slices/assetSlice";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
+import { randomUUID } from "crypto";
+import { v4 } from "uuid";
+import { AssetTableObject } from "types/global";
 
 let table = createTable()
-  .setRowType<Person>()
+  .setRowType<AssetTableObject>()
   // In addition to our row type, we can also tell our table about a custom "updateData" method we will provide it
   .setTableMetaType<{
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
@@ -87,7 +89,10 @@ export default function Table({ _data }: { _data: any }) {
 
   const selectedAsset = useSelector(selectedAssetSelector);
   const [data, setData] = useState(selectedAsset?.table);
-  //const data = useSelector();
+
+  if (data === undefined) {
+    return;
+  }
 
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
@@ -144,7 +149,7 @@ export default function Table({ _data }: { _data: any }) {
         footer: (props) => props.column.id,
         size: 10,
       }),
-      table.createDataColumn((row) => row.destination, {
+      table.createDataColumn((row) => row?.destination, {
         id: "destination",
         header: () => <span>Destination</span>,
         footer: (props) => props.column.id,
@@ -188,7 +193,13 @@ export default function Table({ _data }: { _data: any }) {
 
   const addNewRow = () => {
     setData((prev: any) => [
-      { date: "", status: "", destination: "", confirmed: false },
+      {
+        id: v4(),
+        date: "",
+        status: "",
+        destination: "",
+        confirmed: false,
+      },
       ...prev,
     ]);
   };
@@ -227,7 +238,7 @@ export default function Table({ _data }: { _data: any }) {
         </div>
       </Flex>
       <div style={{ overflow: "auto" }}>
-        <table>
+        <table style={{ width: "100%" }}>
           <thead>
             {instance.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

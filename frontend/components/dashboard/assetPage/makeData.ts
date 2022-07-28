@@ -1,10 +1,6 @@
 import faker from "@faker-js/faker";
 
-export type Person = {
-  date: string;
-  status: string;
-  destination: string;
-};
+
 
 const range = (len: number) => {
   const arr = [];
@@ -14,7 +10,7 @@ const range = (len: number) => {
   return arr;
 };
 
-const newPerson = (): Person => {
+const newPerson = (): AssetTable => {
   return {
     date: faker.date.past().toDateString(),
     status: faker.random.word(),
@@ -23,9 +19,9 @@ const newPerson = (): Person => {
 };
 
 export function makeData(...lens: number[]) {
-  const makeDataLevel = (depth = 0): Person[] => {
+  const makeDataLevel = (depth = 0): AssetTable[] => {
     const len = lens[depth]!;
-    return range(len).map((d): Person => {
+    return range(len).map((d): AssetTable => {
       return {
         ...newPerson(),
       };

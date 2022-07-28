@@ -60,18 +60,27 @@ export default function DropoffModal({
   } | null>();
 
   useEffect(() => {
-    const findedPickup = selectedAsset?.table.find(
-      (value: AssetTableObject) => {
-        if (value.status === ASSET_PICK_DROP.DROP_OFF) {
-          return { ...value };
+    if (open && selectedAsset !== null) {
+      const foundPickup = selectedAsset.table.find(
+        (value: AssetTableObject, index: number) => {
+          if (value.status === ASSET_PICK_DROP.DROP_OFF) {
+            return {
+              date: value.date,
+              destination: value.destination,
+              index: index,
+            };
+          }
         }
+      );
+      if (foundPickup === undefined) {
+        return;
       }
-    );
-    setNextDropOff({
-      date: findedPickup?.date,
-      destination: findedPickup?.destination,
-    });
-  }, [selectedAsset]);
+      setNextDropOff({
+        date: foundPickup.date,
+        destination: foundPickup.destination,
+      });
+    }
+  }, [selectedAsset, open]);
 
   const submit = async () => {
     if (

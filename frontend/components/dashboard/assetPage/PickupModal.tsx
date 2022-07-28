@@ -12,7 +12,7 @@ import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  AssetTableObject,
+  assetsChanged,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
@@ -22,6 +22,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
+import { uploadAdditionalFiles, uploadImagesFiles } from "./uploadImages";
+import { AssetTableObject } from "types/global";
 
 export default function PickupModal({
   open,
@@ -42,6 +44,7 @@ export default function PickupModal({
     officeNotesAccept: false,
     diesel: 0,
     hours: 0,
+    confirmed: false,
   });
   const [images, setImages] = useState([]);
   const [assetPictures, setAssetPictures] = useState({
@@ -81,25 +84,35 @@ export default function PickupModal({
   });
 
   useEffect(() => {
-    const findedPickup = selectedAsset?.table.find(
-      (value: AssetTableObject) => {
-        if (value.status === ASSET_PICK_DROP.PICKUP) {
-          return { ...value };
+    if (open && selectedAsset !== null) {
+      const foundPickup = selectedAsset.table.find(
+        (value: AssetTableObject, index: number) => {
+          if (value.status === ASSET_PICK_DROP.PICKUP) {
+            return {
+              date: value.date,
+              destination: value.destination,
+              index: index,
+            };
+          }
         }
-      }
-    );
+      );
 
-    setFormData((prev) => ({
-      ...prev,
-      date: findedPickup?.date,
-      address: findedPickup?.destination,
-    }));
-  }, [selectedAsset]);
+      if (foundPickup === undefined) {
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        date: foundPickup.date,
+        destination: foundPickup.destination,
+      }));
+    }
+  }, [selectedAsset, open]);
 
   useAsyncEffect(
     async (stopped) => {
-      if (tableSaveToggle) {
-        await updateTable(selectedAsset?.id, selectedAsset?.table);
+      if (tableSaveToggle && selectedAsset !== null) {
+        await updateTable(selectedAsset.id, selectedAsset.table);
         setTableSaveToggle(false);
 
         setImages([]);
@@ -112,6 +125,7 @@ export default function PickupModal({
           officeNotesAccept: false,
           diesel: 0,
           hours: 0,
+          confirmed: false,
         });
         setAssetPictures({
           front: null,
@@ -131,57 +145,6 @@ export default function PickupModal({
     },
     [tableSaveToggle]
   );
-
-  function uploadFiles(files: any) {
-    if (!files) return;
-    const metadata = {
-      contentType: "image/jpeg",
-    };
-
-    let urls = files.map(async (image: any, index: number) => {
-      const storageRef = ref(
-        storage,
-        `assets/${selectedAsset?.name}/images/pickups/pick-up-${
-          formData.date
-        }-${v4()}`
-      );
-      const uploadTask = uploadBytesResumable(storageRef, image, metadata);
-
-      uploadTask.on(
-        STATE_CHANGED,
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-        },
-        (error) => {
-          switch (error.code) {
-            case "storage/unauthorized":
-              // User doesn't have permission to access the object
-              toast.error("User doesn't have permission to access the object");
-              break;
-            case "storage/canceled":
-              // User canceled the upload
-              toast.error("User canceled the upload");
-              break;
-          }
-        }
-      );
-      await uploadTask;
-      const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-      return downloadUrl;
-    });
-
-    let _downloadUrls = Promise.all(urls).then(function (results) {
-      return results;
-    });
-
-    return _downloadUrls;
-  }
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   const handleChange = (e: any) => {
     const { name, value, checked } = e.target;
@@ -203,15 +166,40 @@ export default function PickupModal({
     }
   };
 
+  function checkIfAssetImagesNull() {
+    const isNull = Object.values(assetPictures).map((value) => {
+      if (value === null) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    return isNull;
+  }
+
   const handleSubmit = async () => {
     if (!formData.officeNotesAccept) {
       toast.error("Accept the office note!");
       return true;
     }
+    /*  if (checkIfAssetImagesNull().includes(true)) {
+      toast.error("Please upload all Pictures");
+      return true;
+    } */
 
-    const downloadUrls = await uploadFiles(additionalPictureAcceptedFiles);
+    const imagesDownloadUrl = await uploadImagesFiles(
+      assetPictures,
+      `assets/${selectedAsset?.name}/images/pickups-${formData.date}/pictures/pick-up-${formData.date}`
+    );
 
-    if (downloadUrls == undefined) {
+    const additionalDownloadUrls = await uploadAdditionalFiles(
+      additionalPictureAcceptedFiles,
+      `assets/${selectedAsset?.name}/images/pickups-${
+        formData.date
+      }/additionalImages/pick-up-${formData.date}-${v4()}`
+    );
+
+    if (imagesDownloadUrl == undefined || additionalDownloadUrls == undefined) {
       toast.error("Could not upload Images!");
       return true;
     }
@@ -222,13 +210,15 @@ export default function PickupModal({
         tableContent: {
           date: formData.date,
           destination: formData.destination,
-          status: ASSET_PICK_DROP.PICKUP,
-          images: downloadUrls,
+          status: ASSET_PICK_DROP.PICKEDUP,
+          images: imagesDownloadUrl,
+          additionalImages: additionalDownloadUrls,
           diesel: formData.diesel,
           hours: formData.hours,
           officeNotes: formData.officeNotes,
           officeNotesAccept: formData.officeNotesAccept,
           report: formData.report,
+          confirmed: true,
         },
       })
     );
