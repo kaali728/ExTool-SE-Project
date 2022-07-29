@@ -182,10 +182,10 @@ export default function PickupModal({
       toast.error("Accept the office note!");
       return true;
     }
-    /*  if (checkIfAssetImagesNull().includes(true)) {
+    if (checkIfAssetImagesNull().includes(true)) {
       toast.error("Please upload all Pictures");
       return true;
-    } */
+    }
 
     const imagesDownloadUrl = await uploadImagesFiles(
       assetPictures,

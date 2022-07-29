@@ -21,7 +21,11 @@ import {
 import { FaArrowLeft } from "react-icons/fa";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedAssetSelector } from "lib/slices/assetSlice";
+import {
+  replaceSelectedAssetTable,
+  selectedAssetSelector,
+  updateSelectedAssetTable,
+} from "lib/slices/assetSlice";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { randomUUID } from "crypto";
 import { v4 } from "uuid";
@@ -81,7 +85,7 @@ function useSkipper() {
 }
 
 export default function Table({ _data }: { _data: any }) {
-  //const rerender = React.useReducer(() => ({}), {})[1];
+  const dispatch = useDispatch();
 
   useEffect(() => {
     instance.setPageSize(Number(20));
@@ -123,29 +127,42 @@ export default function Table({ _data }: { _data: any }) {
       table.createDataColumn((row) => row.status, {
         id: "status",
         header: () => <span>Status</span>,
-        cell: ({ cell }) => (
-          <select
-            onChange={(e) =>
-              instance.options.meta?.updateData(
-                cell.row.index,
-                "status",
-                e.target.value
-              )
-            }
-            value={cell.getValue() === "" ? "Select" : cell.getValue()}
-          >
-            <option value={"Select"}>Select</option>
-            <option value={ASSET_PICK_DROP.PICKUP}>
-              {ASSET_PICK_DROP.PICKUP}
-            </option>
-            <option value={ASSET_PICK_DROP.DROP_OFF}>
-              {ASSET_PICK_DROP.DROP_OFF}
-            </option>
-            <option value={ASSET_PICK_DROP.ASSET_CREATED}>
-              {ASSET_PICK_DROP.ASSET_CREATED}
-            </option>
-          </select>
-        ),
+        cell: ({ cell }) =>
+          !cell.row.original?.confirmed &&
+          cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
+          cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+            <select
+              onChange={(e) =>
+                instance.options.meta?.updateData(
+                  cell.row.index,
+                  "status",
+                  e.target.value
+                )
+              }
+              value={cell.getValue() === "" ? "Select" : cell.getValue()}
+            >
+              <option value={"Select"}>Select</option>
+              <option value={ASSET_PICK_DROP.PICKUP}>
+                {ASSET_PICK_DROP.PICKUP}
+              </option>
+              <option value={ASSET_PICK_DROP.DROP_OFF}>
+                {ASSET_PICK_DROP.DROP_OFF}
+              </option>
+              <option value={ASSET_PICK_DROP.ASSET_CREATED}>
+                {ASSET_PICK_DROP.ASSET_CREATED}
+              </option>
+            </select>
+          ) : (
+            <div
+              className={
+                cell.getValue() === ASSET_PICK_DROP.PICKEDUP
+                  ? scss.pickedUpCell
+                  : scss.dropedOffCell
+              }
+            >
+              {cell.getValue()}
+            </div>
+          ),
         footer: (props) => props.column.id,
         size: 10,
       }),
@@ -204,8 +221,9 @@ export default function Table({ _data }: { _data: any }) {
     ]);
   };
 
-  const save = () => {
-    updateTable(_data.id, data);
+  const save = async () => {
+    await updateTable(_data.id, data);
+    dispatch(replaceSelectedAssetTable({ table: data }));
     setShowSaveButton(false);
   };
 

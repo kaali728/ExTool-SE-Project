@@ -50,7 +50,7 @@ export const assetSlice = createSlice({
       action: PayloadAction<{
         tableContent: {
           date: string;
-          status: string;
+          status: ASSET_PICK_DROP;
           destination: string;
           images: AssetPictureDownloadUrl;
           additionalImages: string[];
@@ -63,11 +63,11 @@ export const assetSlice = createSlice({
         };
       }>
     ) {
-      console.log(action.payload.tableContent);
-      if(state.content.selectedAsset === null) return;
+      if(state.content.selectedAsset === null || state.content.selectedAsset === undefined) return;
       const index = state.content.selectedAsset.table.findIndex((element: AssetTableObject, index: number) => element.destination === action.payload.tableContent.destination 
         && element.date === action.payload.tableContent.date
       )
+
       state.content.selectedAsset.table[index].status = action.payload.tableContent.status;
       state.content.selectedAsset.table[index].images = action.payload.tableContent.images;
       state.content.selectedAsset.table[index].additionalImages = action.payload.tableContent.additionalImages;
@@ -78,6 +78,15 @@ export const assetSlice = createSlice({
       state.content.selectedAsset.table[index].report = action.payload.tableContent.report;
       state.content.selectedAsset.table[index].confirmed = action.payload.tableContent.confirmed;
   },
+  replaceSelectedAssetTable(
+    state,
+    action: PayloadAction<{
+      table: AssetTableObject[];
+    }>
+  ) {
+    if(state.content.selectedAsset === null || state.content.selectedAsset === undefined) return;
+    state.content.selectedAsset.table = action.payload.table;
+},
   },
 });
 
@@ -86,6 +95,7 @@ export const {
   setAssetsChanged,
   setSelectedAsset,
   updateSelectedAssetTable,
+  replaceSelectedAssetTable
 } = assetSlice.actions;
 
 function selectSelf(state: RootState): AssetsState {

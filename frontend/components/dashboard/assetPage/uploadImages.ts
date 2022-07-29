@@ -8,27 +8,28 @@ function uploadImagesFiles(files: AssetPictures, path: string): AssetPictureDown
     if (!files) return;
    
     const fileMap = new Map(Object.entries(files));
-
-    let _downloadUrls: AssetPictureDownloadUrl = {
+    let downloadUrlMap = new Map();
+    /* let _downloadUrls: AssetPictureDownloadUrl = {
         front: "",
         rightSide: "",
         leftSide: "",
         back: "",
         fuelGuage: "",
         hoursReading: "",
-    };
-
+    }; */
     fileMap.forEach(async (value, key) => {
         const storageRef = ref(
             storage,
             path.concat(`${key}-${v4()}`)
           );
-
-        _downloadUrls[key as keyof AssetPictureDownloadUrl] = await uploadFile(storageRef, value);
+        let url =  await uploadFile(storageRef, value)
+        console.log(url);
+        downloadUrlMap.set(key, url);
         console.log(`${key} image is uploaded`);
     })
+    
   
-    return _downloadUrls;
+    return Object.fromEntries(downloadUrlMap);
   }
 
 

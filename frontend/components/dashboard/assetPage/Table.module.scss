@@ -41,4 +41,12 @@
   input[type="date"] {
     width: 100%;
   }
+
+  .pickedUpCell {
+    color: rgb(235, 77, 77) !important;
+  }
+
+  .dropedOffCell{
+    color: rgb(165, 248, 81) !important;
+  }
 }

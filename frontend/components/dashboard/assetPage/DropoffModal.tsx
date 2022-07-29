@@ -11,7 +11,6 @@ import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  AssetTableObject,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
@@ -21,6 +20,7 @@ import toast from "react-hot-toast";
 import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
+import { AssetTableObject } from "types/global";
 
 export default function DropoffModal({
   open,
@@ -115,8 +115,8 @@ export default function DropoffModal({
 
   useAsyncEffect(
     async (stopped) => {
-      if (tableSaveToggle) {
-        await updateTable(selectedAsset?.id, selectedAsset?.table);
+      if (tableSaveToggle && selectedAsset !== null) {
+        await updateTable(selectedAsset?.id, selectedAsset.table);
         setTableSaveToggle(false);
       }
 
