@@ -5,56 +5,50 @@ import { AssetPictureDownloadUrl, AssetPictures } from "types/global";
 import { v4 } from "uuid";
 
 function uploadImagesFiles(files: AssetPictures, path: string): AssetPictureDownloadUrl | undefined {
-    if (!files) return;
-   
+    if (!files) return;   
     const fileMap = new Map(Object.entries(files));
-    let downloadUrlMap = new Map();
-    /* let _downloadUrls: AssetPictureDownloadUrl = {
+     let _downloadUrls: AssetPictureDownloadUrl = {
         front: "",
         rightSide: "",
         leftSide: "",
         back: "",
         fuelGuage: "",
         hoursReading: "",
-    }; */
+    }; 
     fileMap.forEach(async (value, key) => {
+        const filePath = path.concat(`${key}-${v4()}`);
+        _downloadUrls[key as keyof AssetPictureDownloadUrl] = filePath;
         const storageRef = ref(
             storage,
-            path.concat(`${key}-${v4()}`)
+            filePath
           );
-        let url =  await uploadFile(storageRef, value)
-        console.log(url);
-        downloadUrlMap.set(key, url);
+        await uploadFile(storageRef, value)
         console.log(`${key} image is uploaded`);
     })
-    
-  
-    return Object.fromEntries(downloadUrlMap);
+
+    console.log(_downloadUrls);
+    return _downloadUrls;
   }
 
 
 
-function uploadAdditionalFiles(files: File[], path: string): Promise<string[]> | undefined {
+async function uploadAdditionalFiles(files: File[], path: string) {
     if (!files) return;
-    let urls: string[] = []; 
+    let filePathArray: string[] = []; 
     
     files.map(async (image: any, index: number) => {
+      const filePath = path.concat("-"+`${index}`);
+      filePathArray.push(filePath);
       const storageRef = ref(
         storage,
         path.concat("-"+`${index}`)
       );
-      
-      urls.push(await uploadFile(storageRef, image));
+      await uploadFile(storageRef, image);
     });
+    console.log(filePathArray);
 
-    let _downloadUrls = Promise.all(urls).then(function (results) {
-      return results;
-    });    
 
-    console.log(_downloadUrls);
-    
-
-    return _downloadUrls;
+    return filePathArray;
   }
 
 

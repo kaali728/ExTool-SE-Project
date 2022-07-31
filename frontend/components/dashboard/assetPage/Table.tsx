@@ -10,7 +10,15 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { Button, DropDown, Flex, Icon, Text, Input } from "@findnlink/neuro-ui";
+import {
+  Button,
+  DropDown,
+  Flex,
+  Icon,
+  Text,
+  Input,
+  Tag,
+} from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
 import {
   FiArrowLeft,

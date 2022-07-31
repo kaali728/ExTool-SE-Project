@@ -24,7 +24,7 @@ export type AssetTableObject = {
   officeNotes?: string;
   hours?: number;
   diesel?: number;
-  images?: object;
+  images?: AssetPictureDownloadUrl;
   additionalImages?: string[];
 };
 
