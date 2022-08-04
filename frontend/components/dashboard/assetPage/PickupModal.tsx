@@ -24,6 +24,8 @@ import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { uploadAdditionalFiles, uploadImagesFiles } from "./uploadImages";
 import { AssetTableObject } from "types/global";
+import { GrMapLocation } from "react-icons/gr";
+import scss from "./PickupDropoff.module.scss";
 
 export default function PickupModal({
   open,
@@ -318,6 +320,15 @@ export default function PickupModal({
           Address
         </Text>
         <Text weight="bold">{formData.destination}</Text>
+        <Text href={`https://maps.google.com/?q=${formData.destination}`}>
+          <Flex flexDirection="row" alignItems="center">
+            <GrMapLocation className={scss.icon} />
+            <Text margin="0 0 0 m" padding="0">
+              Open map
+            </Text>
+          </Flex>
+        </Text>
+
         <Text margin="xl 0 m 0" scale="s">
           Date
         </Text>
