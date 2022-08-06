@@ -38,6 +38,7 @@ import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { randomUUID } from "crypto";
 import { v4 } from "uuid";
 import { AssetTableObject } from "types/global";
+import AddModal from "./AddModal";
 
 let table = createTable()
   .setRowType<AssetTableObject>()
@@ -108,7 +109,7 @@ export default function Table({ _data }: { _data: any }) {
 
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
-
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
   const columns = React.useMemo(
@@ -216,14 +217,21 @@ export default function Table({ _data }: { _data: any }) {
     setData(selectedAsset?.table);
   }, [selectedAsset]);
 
-  const addNewRow = () => {
+  const addNewRow = ({
+    date,
+    status,
+    destination,
+    confirmed,
+    officeNotes,
+  }: any) => {
     setData((prev: any) => [
       {
         id: v4(),
-        date: "",
-        status: "",
-        destination: "",
-        confirmed: false,
+        date,
+        status,
+        destination,
+        confirmed,
+        officeNotes,
       },
       ...prev,
     ]);
@@ -245,98 +253,113 @@ export default function Table({ _data }: { _data: any }) {
   }, [data]);
 
   return (
-    <div className={scss.table}>
-      <Flex
-        flexDirection="row"
-        justifyContent="space-between"
-        padding="0 0 m 0"
-      >
-        <Text weight="bold" scale="xl" margin="m 0 xl 0">
-          Delivery Schedule
-        </Text>
-        <div>
-          <Button onClick={addNewRow}>Add</Button>
-          {showSaveButton && (
-            <Button primary onClick={save} margin="0">
-              Save
-            </Button>
-          )}
-        </div>
-      </Flex>
-      <div style={{ overflow: "auto" }}>
-        <table style={{ width: "100%" }}>
-          <thead>
-            {instance.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder ? null : (
-                        <div>
-                          {header.renderHeader()}
-                          {header.column.getCanFilter() ? (
-                            <div>
-                              <Filter
-                                column={header.column}
-                                instance={instance}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {instance.getRowModel().rows.map((row) => {
-              return (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => {
-                    return <td key={cell.id}>{cell.renderCell()}</td>;
+    <>
+      <div className={scss.table}>
+        <Flex
+          flexDirection="row"
+          justifyContent="space-between"
+          padding="0 0 m 0"
+        >
+          <Text weight="bold" scale="xl" margin="m 0 xl 0">
+            Delivery Schedule
+          </Text>
+          <div>
+            <Button onClick={() => setOpenAddModal(true)}>Add</Button>
+            {showSaveButton && (
+              <Button primary onClick={save} margin="0">
+                Save
+              </Button>
+            )}
+          </div>
+        </Flex>
+        <div style={{ overflow: "auto" }}>
+          <table style={{ width: "100%" }}>
+            <thead>
+              {instance.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <th key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : (
+                          <div>
+                            {header.renderHeader()}
+                            {header.column.getCanFilter() ? (
+                              <div>
+                                <Filter
+                                  column={header.column}
+                                  instance={instance}
+                                />
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+                      </th>
+                    );
                   })}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+            </thead>
+            <tbody>
+              {instance.getRowModel().rows.map((row) => {
+                return (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return <td key={cell.id}>{cell.renderCell()}</td>;
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <Flex flexDirection="row" justifyContent="space-between" margin="xl 0">
+          <Button
+            onClick={() => instance.setPageIndex(0)}
+            disabled={!instance.getCanPreviousPage()}
+          >
+            <FiSkipBack />
+          </Button>
+          <Button
+            onClick={() => instance.previousPage()}
+            disabled={!instance.getCanPreviousPage()}
+          >
+            <FiArrowLeft />
+          </Button>
+          <Text align="center">
+            <div>Page</div>
+            <strong>
+              {instance.getState().pagination.pageIndex + 1} of{" "}
+              {instance.getPageCount()}
+            </strong>
+          </Text>
+          <Button
+            onClick={() => instance.nextPage()}
+            disabled={!instance.getCanNextPage()}
+          >
+            <FiArrowRight />
+          </Button>
+          <Button
+            onClick={() => instance.setPageIndex(instance.getPageCount() - 1)}
+            disabled={!instance.getCanNextPage()}
+          >
+            <FiSkipForward />
+          </Button>
+        </Flex>
       </div>
-      <Flex flexDirection="row" justifyContent="space-between" margin="xl 0">
-        <Button
-          onClick={() => instance.setPageIndex(0)}
-          disabled={!instance.getCanPreviousPage()}
-        >
-          <FiSkipBack />
-        </Button>
-        <Button
-          onClick={() => instance.previousPage()}
-          disabled={!instance.getCanPreviousPage()}
-        >
-          <FiArrowLeft />
-        </Button>
-        <Text align="center">
-          <div>Page</div>
-          <strong>
-            {instance.getState().pagination.pageIndex + 1} of{" "}
-            {instance.getPageCount()}
-          </strong>
-        </Text>
-        <Button
-          onClick={() => instance.nextPage()}
-          disabled={!instance.getCanNextPage()}
-        >
-          <FiArrowRight />
-        </Button>
-        <Button
-          onClick={() => instance.setPageIndex(instance.getPageCount() - 1)}
-          disabled={!instance.getCanNextPage()}
-        >
-          <FiSkipForward />
-        </Button>
-      </Flex>
-    </div>
+      <AddModal
+        open={openAddModal}
+        setOpen={setOpenAddModal}
+        onSubmit={({
+          date,
+          status,
+          destination,
+          confirmed,
+          officeNotes,
+        }: any) =>
+          addNewRow({ date, status, destination, confirmed, officeNotes })
+        }
+      ></AddModal>
+    </>
   );
 }
 function Filter({

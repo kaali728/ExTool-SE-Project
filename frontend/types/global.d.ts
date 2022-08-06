@@ -20,8 +20,8 @@ export type AssetTableObject = {
     | ASSET_PICK_DROP.PICKUP;
   confirmed: boolean;
   report?: string;
-  officeNotesAccept?: boolean;
-  officeNotes?: string;
+  officeNotesAccept?: boolean[];
+  officeNotes?: string[];
   hours?: number;
   diesel?: number;
   images?: AssetPictureDownloadUrl;
@@ -35,7 +35,7 @@ export type AssetPictures = {
   back: File;
   fuelGuage: File;
   hoursReading: File;
-}
+};
 
 export type AssetPictureDownloadUrl = {
   front: string;
@@ -44,4 +44,4 @@ export type AssetPictureDownloadUrl = {
   back: string;
   fuelGuage: string;
   hoursReading: string;
-}
+};
