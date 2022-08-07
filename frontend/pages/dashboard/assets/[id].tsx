@@ -32,6 +32,8 @@ import PickupModal from "src/components/dashboard/assetPage/PickupModal";
 import DropoffModal from "src/components/dashboard/assetPage/DropoffModal";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector, setSelectedAsset } from "lib/slices/assetSlice";
+import { getAssetStatusAirFleet } from "lib/api";
+import useAsyncEffect from "lib/hooks/useAsyncEffect";
 
 export default function Asset() {
   const dispatch = useDispatch();
@@ -94,6 +96,16 @@ export default function Asset() {
       fetchData();
     }
   }, [id]);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      //assign interval to a variable to clear it.
+      const status = await getAssetStatusAirFleet(1);
+      let assetEdited = data;
+      console.log(status);
+    }, 50000);
+    return () => clearInterval(intervalId);
+  }, [dispatch]);
 
   const MapWithNoSSR = dynamic(
     () => import("../../../components/dashboard/assetPage/Map"),
