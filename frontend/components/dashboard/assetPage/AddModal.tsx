@@ -59,16 +59,16 @@ export default function PickupModal({
   };
 
   const handleSubmit = async () => {
-    if (formData.status !== "Select") {
-      toast.error("Select a status!");
+    if (formData.status === "Select" || formData.status === "") {
+      toast.error("Please select a status!");
       return true;
     }
     if (formData.destination === "") {
-      toast.error("Pick a destination!");
+      toast.error("Please pick a destination!");
       return true;
     }
     if (formData.date === "") {
-      toast.error("Pick a date!");
+      toast.error("Please pick a date and time!");
       return true;
     }
 

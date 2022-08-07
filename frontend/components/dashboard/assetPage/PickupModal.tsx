@@ -158,12 +158,16 @@ export default function PickupModal({
     if (name.includes("officeNotesAccept")) {
       const noteIndex = Number(name.replace("officeNotesAccept", ""));
       setFormData((prev) => {
-        const _officeNotesAccept = prev.officeNotesAccept;
-        _officeNotesAccept.filter((value, index) => {
+        let _officeNotesAccept = prev.officeNotesAccept;
+        _officeNotesAccept = _officeNotesAccept.filter((value, index) => {
+          //console.log("noteIndex", noteIndex, index, checked, value);
+
           if (noteIndex === index) {
-            return checked;
+            console.log("if");
+            return true;
           } else {
-            return value;
+            console.log("else");
+            return true;
           }
         });
         console.log(_officeNotesAccept);
@@ -430,8 +434,8 @@ export default function PickupModal({
             <input
               type="checkbox"
               name={"officeNotesAccept" + index}
-              onClick={handleChange}
-              defaultChecked={formData.officeNotesAccept[index]}
+              onChange={handleChange}
+              value={formData.officeNotesAccept[index]}
               id={"officeNotesAccept" + index}
             />
             <label

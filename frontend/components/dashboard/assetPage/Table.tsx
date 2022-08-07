@@ -355,9 +355,10 @@ export default function Table({ _data }: { _data: any }) {
           destination,
           confirmed,
           officeNotes,
-        }: any) =>
-          addNewRow({ date, status, destination, confirmed, officeNotes })
-        }
+        }: any) => {
+          addNewRow({ date, status, destination, confirmed, officeNotes });
+          save();
+        }}
       ></AddModal>
     </>
   );
