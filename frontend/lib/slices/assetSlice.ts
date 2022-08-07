@@ -1,7 +1,11 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { RootState } from "lib/store";
-import { AssetPictureDownloadUrl, AssetTableObject, AssetType } from "types/global";
+import {
+  AssetPictureDownloadUrl,
+  AssetTableObject,
+  AssetType,
+} from "types/global";
 
 export type AssetsState = {
   content: {
@@ -11,8 +15,6 @@ export type AssetsState = {
     filteredAssets: Array<AssetType>;
   };
 };
-
-
 
 const initialState: AssetsState = {
   content: {
@@ -56,37 +58,56 @@ export const assetSlice = createSlice({
           additionalImages: string[];
           diesel: number;
           hours: number;
-          officeNotes: string;
-          officeNotesAccept: boolean;
+          officeNotes: string[];
+          officeNotesAccept: boolean[];
           report: string;
           confirmed: boolean;
         };
       }>
     ) {
-      if(state.content.selectedAsset === null || state.content.selectedAsset === undefined) return;
-      const index = state.content.selectedAsset.table.findIndex((element: AssetTableObject, index: number) => element.destination === action.payload.tableContent.destination 
-        && element.date === action.payload.tableContent.date
+      if (
+        state.content.selectedAsset === null ||
+        state.content.selectedAsset === undefined
       )
+        return;
+      const index = state.content.selectedAsset.table.findIndex(
+        (element: AssetTableObject, index: number) =>
+          element.destination === action.payload.tableContent.destination &&
+          element.date === action.payload.tableContent.date
+      );
 
-      state.content.selectedAsset.table[index].status = action.payload.tableContent.status;
-      state.content.selectedAsset.table[index].images = action.payload.tableContent.images;
-      state.content.selectedAsset.table[index].additionalImages = action.payload.tableContent.additionalImages;
-      state.content.selectedAsset.table[index].diesel = action.payload.tableContent.diesel;
-      state.content.selectedAsset.table[index].hours = action.payload.tableContent.hours;
-      state.content.selectedAsset.table[index].officeNotes = action.payload.tableContent.officeNotes;
-      state.content.selectedAsset.table[index].officeNotesAccept = action.payload.tableContent.officeNotesAccept;
-      state.content.selectedAsset.table[index].report = action.payload.tableContent.report;
-      state.content.selectedAsset.table[index].confirmed = action.payload.tableContent.confirmed;
-  },
-  replaceSelectedAssetTable(
-    state,
-    action: PayloadAction<{
-      table: AssetTableObject[];
-    }>
-  ) {
-    if(state.content.selectedAsset === null || state.content.selectedAsset === undefined) return;
-    state.content.selectedAsset.table = action.payload.table;
-},
+      state.content.selectedAsset.table[index].status =
+        action.payload.tableContent.status;
+      state.content.selectedAsset.table[index].images =
+        action.payload.tableContent.images;
+      state.content.selectedAsset.table[index].additionalImages =
+        action.payload.tableContent.additionalImages;
+      state.content.selectedAsset.table[index].diesel =
+        action.payload.tableContent.diesel;
+      state.content.selectedAsset.table[index].hours =
+        action.payload.tableContent.hours;
+      state.content.selectedAsset.table[index].officeNotes =
+        action.payload.tableContent.officeNotes;
+      state.content.selectedAsset.table[index].officeNotesAccept =
+        action.payload.tableContent.officeNotesAccept;
+      state.content.selectedAsset.table[index].report =
+        action.payload.tableContent.report;
+      state.content.selectedAsset.table[index].confirmed =
+        action.payload.tableContent.confirmed;
+    },
+    replaceSelectedAssetTable(
+      state,
+      action: PayloadAction<{
+        table: AssetTableObject[];
+      }>
+    ) {
+      if (
+        state.content.selectedAsset === null ||
+        state.content.selectedAsset === undefined
+      )
+        return;
+      state.content.selectedAsset.table = action.payload.table;
+    },
   },
 });
 
@@ -95,7 +116,7 @@ export const {
   setAssetsChanged,
   setSelectedAsset,
   updateSelectedAssetTable,
-  replaceSelectedAssetTable
+  replaceSelectedAssetTable,
 } = assetSlice.actions;
 
 function selectSelf(state: RootState): AssetsState {

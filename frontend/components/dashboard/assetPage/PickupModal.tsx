@@ -24,6 +24,8 @@ import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { uploadAdditionalFiles, uploadImagesFiles } from "./uploadImages";
 import { AssetTableObject } from "types/global";
+import { GrMapLocation } from "react-icons/gr";
+import scss from "./PickupDropoff.module.scss";
 
 export default function PickupModal({
   open,
@@ -39,9 +41,8 @@ export default function PickupModal({
     destination: "",
     date: "",
     report: "",
-    officeNotes:
-      "Please don't forget to pick up the attachments with the machine.",
-    officeNotesAccept: false,
+    officeNotes: [],
+    officeNotesAccept: [],
     diesel: 0,
     hours: 0,
     confirmed: false,
@@ -91,6 +92,7 @@ export default function PickupModal({
             return {
               date: value.date,
               destination: value.destination,
+              officeNotes: value.officeNotes,
               index: index,
             };
           }
@@ -101,10 +103,14 @@ export default function PickupModal({
         return;
       }
 
-      setFormData((prev) => ({
+      setFormData((prev: any) => ({
         ...prev,
         date: foundPickup.date,
         destination: foundPickup.destination,
+        officeNotes: foundPickup.officeNotes,
+        officeNotesAccept: new Array(foundPickup.officeNotes?.length).fill(
+          false
+        ),
       }));
     }
   }, [selectedAsset, open]);
@@ -120,9 +126,8 @@ export default function PickupModal({
           destination: "",
           date: "",
           report: "",
-          officeNotes:
-            "Please don't forget to pick up the attachments with the machine.",
-          officeNotesAccept: false,
+          officeNotes: [],
+          officeNotesAccept: [],
           diesel: 0,
           hours: 0,
           confirmed: false,
@@ -149,14 +154,33 @@ export default function PickupModal({
   const handleChange = (e: any) => {
     const { name, value, checked } = e.target;
 
+    // TODO: Doenst update state...
+    if (name.includes("officeNotesAccept")) {
+      const noteIndex = Number(name.replace("officeNotesAccept", ""));
+      setFormData((prev) => {
+        let _officeNotesAccept = prev.officeNotesAccept;
+        _officeNotesAccept = _officeNotesAccept.filter((value, index) => {
+          //console.log("noteIndex", noteIndex, index, checked, value);
+
+          if (noteIndex === index) {
+            console.log("if");
+            return true;
+          } else {
+            console.log("else");
+            return true;
+          }
+        });
+        console.log(_officeNotesAccept);
+        return { ...prev, officeNotesAccept: _officeNotesAccept };
+      });
+
+      return;
+    }
+
     switch (name) {
       case "diesel":
       case "hours": {
         setFormData((prev) => ({ ...prev, [name]: parseInt(value) }));
-        break;
-      }
-      case "officeNotesAccept": {
-        setFormData((prev) => ({ ...prev, [name]: checked }));
         break;
       }
       default: {
@@ -165,6 +189,10 @@ export default function PickupModal({
       }
     }
   };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   function checkIfAssetImagesNull() {
     const isNull = Object.values(assetPictures).map((value) => {
@@ -318,6 +346,15 @@ export default function PickupModal({
           Address
         </Text>
         <Text weight="bold">{formData.destination}</Text>
+        <Text href={`https://maps.google.com/?q=${formData.destination}`}>
+          <Flex flexDirection="row" alignItems="center">
+            <GrMapLocation className={scss.icon} />
+            <Text margin="0 0 0 m" padding="0">
+              Open map
+            </Text>
+          </Flex>
+        </Text>
+
         <Text margin="xl 0 m 0" scale="s">
           Date
         </Text>
@@ -391,18 +428,24 @@ export default function PickupModal({
           value={formData.hours.toString()}
           onChange={handleChange}
         />
-        <Flex flexDirection="row" margin="xl 0 0 0">
-          <input
-            type="checkbox"
-            name="officeNotesAccept"
-            onClick={handleChange}
-            defaultChecked={formData.officeNotesAccept}
-            id="officeNotesAccept"
-          />
-          <label style={{ marginLeft: "10px" }} htmlFor="officeNotesAccept">
-            {formData.officeNotes}
-          </label>
-        </Flex>
+
+        {formData.officeNotes.map((officeNote, index) => (
+          <Flex key={index} flexDirection="row" margin="xl 0 0 0">
+            <input
+              type="checkbox"
+              name={"officeNotesAccept" + index}
+              onChange={handleChange}
+              value={formData.officeNotesAccept[index]}
+              id={"officeNotesAccept" + index}
+            />
+            <label
+              style={{ marginLeft: "10px" }}
+              htmlFor={"officeNotesAccept" + index}
+            >
+              {officeNote}
+            </label>
+          </Flex>
+        ))}
       </Flex>
     </Modal>
   );

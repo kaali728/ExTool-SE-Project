@@ -11,6 +11,7 @@
   "dependencies": {
     "@faker-js/faker": "^6.3.1",
     "@findnlink/neuro-ui": "^1.0.36",
+    "@formkit/auto-animate": "^1.0.0-beta.1",
     "@reduxjs/toolkit": "^1.8.1",
     "@tanstack/react-table": "8.0.0-beta.8",
     "@types/uuid": "^8.3.4",

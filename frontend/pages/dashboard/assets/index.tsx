@@ -51,7 +51,10 @@ function Assets() {
       }
     };
 
-    fetchData().catch((e) => toast.error("Something went wrong!"));
+    fetchData().catch((e) => {
+      toast.error("Something went wrong!");
+      console.log("error", e);
+    });
 
     // cancel any future `setData`
     return () => (isSubscribed = false);
