@@ -191,11 +191,11 @@ export default function Asset() {
           </TabsHeader>
           <TabsContent margin="0 0 xl 0" padding="xl 0 0 0">
             {[
-              <Overview data={data} />,
-              <Service />,
-              <Gallery />,
-              <Contracts />,
-              <Availiblity />,
+              <Overview data={data} key={1} />,
+              <Service key={2} />,
+              <Gallery key={3} />,
+              <Contracts key={4} />,
+              <Availiblity key={5} />,
             ]}
           </TabsContent>
         </Tabs>

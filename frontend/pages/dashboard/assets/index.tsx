@@ -99,7 +99,7 @@ function Assets() {
                   </Text>
                   <Tag>
                     {[
-                      <Flex alignItems="center" flexDirection="row">
+                      <Flex alignItems="center" flexDirection="row" key={1}>
                         <svg
                           id="Component_34_8"
                           data-name="Component 34 – 8"
@@ -130,7 +130,7 @@ function Assets() {
                               stroke="var(--text200)"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              stroke-width="2"
+                              strokeWidth="2"
                             />
                             <path
                               id="Path_1180"
@@ -141,7 +141,7 @@ function Assets() {
                               stroke="var(--text200)"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              stroke-width="2"
+                              strokeWidth="2"
                             />
                           </g>
                         </svg>
@@ -149,7 +149,7 @@ function Assets() {
                           {item.time}
                         </Text>
                       </Flex>,
-                      <Flex alignItems="center" flexDirection="row">
+                      <Flex alignItems="center" flexDirection="row" key={2}>
                         <svg
                           id="Component_35_5"
                           data-name="Component 35 – 5"

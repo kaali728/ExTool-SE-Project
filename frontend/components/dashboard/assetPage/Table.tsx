@@ -96,21 +96,20 @@ function useSkipper() {
 export default function Table({ _data }: { _data: any }) {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    instance.setPageSize(Number(20));
-  }, []);
-
   const selectedAsset = useSelector(selectedAssetSelector);
   const [data, setData] = useState(selectedAsset?.table);
-
-  if (data === undefined) {
-    return;
-  }
-
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+
+  useEffect(() => {
+    instance.setPageSize(Number(20));
+  }, []);
+
+  if (data === undefined) {
+    return;
+  }
 
   const columns = React.useMemo(
     () => [

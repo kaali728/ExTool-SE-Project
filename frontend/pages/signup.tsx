@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import { login } from "../lib/slices/userSlice";
 import { DASHBOARD, SIGNIN } from "../lib/constants/routes";
 
-function signup() {
+function Signup() {
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
@@ -149,4 +149,4 @@ function signup() {
   );
 }
 
-export default signup;
+export default Signup;

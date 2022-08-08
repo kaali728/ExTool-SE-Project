@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../lib/slices/userSlice";
 import { DASHBOARD, PASSWORD_FORGET, SIGNUP } from "../lib/constants/routes";
 
-function signin() {
+function Signin() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
@@ -117,4 +117,4 @@ function signin() {
   );
 }
 
-export default signin;
+export default Signin;

@@ -376,7 +376,7 @@ export default function PickupModal({
         >
           <input {...additionalPictureGetInputProps()} />
           <Text padding="xl" align="center">
-            Drag 'n' drop, or click to select files
+            Drag &apos;n&apos; drop, or click to select files
           </Text>
         </div>
         {images.length > 0 && (
