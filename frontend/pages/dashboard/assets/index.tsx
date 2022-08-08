@@ -22,19 +22,23 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   assetsChanged,
   getAllAssets,
+  selectAssetFilter,
   selectAssets,
   setAssetsChanged,
 } from "../../../lib/slices/assetSlice";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import { ASSETS } from "lib/constants/routes";
+import { AssetType } from "types/global";
 
 function Assets() {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
   const assets = useSelector(selectAssets);
+  const filteredAsset = useSelector(selectAssetFilter);
   const assetsStateChanged = useSelector(assetsChanged);
   const router = useRouter();
+  const [showingAsset, setShowingAsset] = useState<AssetType[]>([]);
 
   useEffect((): any => {
     let isSubscribed = true;
@@ -60,6 +64,14 @@ function Assets() {
     return () => (isSubscribed = false);
   }, [assetsStateChanged]);
 
+  useEffect(() => {
+    if (filteredAsset.length > 0) {
+      setShowingAsset(filteredAsset);
+    } else {
+      setShowingAsset(assets);
+    }
+  }, [filteredAsset, assets]);
+
   // useEffect(() => {
   //   console.log(assets);
   // }, [assets]);
@@ -82,7 +94,7 @@ function Assets() {
           </Flex>
           <Spacer />
           <Grid _class={scss.assetsGrid}>
-            {assets.map((item: any, index: any) => (
+            {showingAsset.map((item: any, index: any) => (
               <Card
                 key={index}
                 pointer

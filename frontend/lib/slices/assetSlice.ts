@@ -115,6 +115,7 @@ export const {
   getAllAssets,
   setAssetsChanged,
   setSelectedAsset,
+  setfilteredAssets,
   updateSelectedAssetTable,
   replaceSelectedAssetTable,
 } = assetSlice.actions;
@@ -131,6 +132,10 @@ export const selectAssetsContent = createSelector(
 export const selectAssets = createSelector(
   selectSelf,
   (state) => state.content.assets
+);
+export const selectAssetFilter = createSelector(
+  selectSelf,
+  (state) => state.content.filteredAssets
 );
 export const assetsChanged = createSelector(
   selectSelf,
