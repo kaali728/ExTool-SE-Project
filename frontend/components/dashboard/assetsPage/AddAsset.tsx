@@ -1,6 +1,13 @@
-import { Input, Modal, Spacer, Text } from "@findnlink/neuro-ui";
+import {
+  ImageGallery,
+  Image,
+  Input,
+  Modal,
+  Spacer,
+  Text,
+} from "@findnlink/neuro-ui";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { storage, STATE_CHANGED } from "../../../lib/firebase";
 import styles from "../Dashboard.module.scss";
@@ -9,6 +16,8 @@ import { createNewAsset } from "../../../lib/api";
 import { useDispatch } from "react-redux";
 import { setAssetsChanged } from "../../../lib/slices/assetSlice";
 import { ASSET_PICK_DROP, ENGINE, STATUS } from "../../../lib/models/assetEnum";
+import { useDropzone } from "react-dropzone";
+import { uploadFile } from "../assetPage/uploadImages";
 
 type Props = {
   openModal: boolean;
@@ -19,8 +28,9 @@ function AddAsset({ openModal, setOpen }: Props) {
   const [newAsset, setNewAsset] = useState({
     name: "",
     serialNumber: "",
+    diesel: "",
   });
-  const [imageUpload, setImageUpload] = useState<File | null>(null);
+  const [imageUpload, setImageUpload] = useState<any>([{ id: 0, src: "" }]);
 
   function newAssetChange(e: any) {
     setNewAsset((prev) => ({
@@ -42,7 +52,14 @@ function AddAsset({ openModal, setOpen }: Props) {
       );
       return;
     }
-    const url = await uploadFiles(imageUpload);
+
+    const storageRef = ref(
+      storage,
+      `assets/${newAsset.name}/images/${newAsset.name + "_" + v4()}`
+    );
+
+    const url = await uploadFile(storageRef, assetImageAcceptedFiles[0]);
+
     await createNewAsset({
       id: "",
       name: newAsset.name,
@@ -61,53 +78,30 @@ function AddAsset({ openModal, setOpen }: Props) {
       engine: ENGINE.STOPED,
       location: { long: 0, lat: 0 },
       machineHours: 0,
+      diesel: newAsset.diesel,
     });
     dispatch(setAssetsChanged({ changed: true }));
     setOpen(false);
   }
 
-  async function uploadFiles(files: any) {
-    if (!files) return;
+  const onDropAdditional = useCallback((assetImageAcceptedFiles: any[]) => {
+    assetImageAcceptedFiles.map((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setImageUpload((prev: any) => [{ id: index, src: e.target!.result }]);
+      };
+      reader.readAsDataURL(file);
+      return file;
+    });
+  }, []);
 
-    console.log(files);
-
-    const storageRef = ref(
-      storage,
-      `assets/${newAsset.name}/images/${newAsset.name + "_" + v4()}`
-    );
-
-    const metadata = {
-      contentType: "image/jpeg",
-    };
-
-    const uploadTask = uploadBytesResumable(storageRef, imageUpload!, metadata);
-
-    uploadTask.on(
-      STATE_CHANGED,
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-      },
-      (error) => {
-        switch (error.code) {
-          case "storage/unauthorized":
-            // User doesn't have permission to access the object
-            toast.error("User doesn't have permission to access the object");
-            break;
-          case "storage/canceled":
-            // User canceled the upload
-            toast.error("User canceled the upload");
-            break;
-        }
-      }
-    );
-    await uploadTask;
-
-    const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-
-    return downloadUrl;
-  }
+  const {
+    acceptedFiles: assetImageAcceptedFiles,
+    getRootProps: assetImageFilesGetRootProps,
+    getInputProps: assetImageFilesGetInputProps,
+  } = useDropzone({
+    onDrop: onDropAdditional,
+  });
 
   return (
     <Modal
@@ -138,13 +132,29 @@ function AddAsset({ openModal, setOpen }: Props) {
         onChange={newAssetChange}
       />
       <Spacer />
-      <input
-        type="file"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          if (!e.target.files) return;
-          setImageUpload(e.target.files[0]);
-        }}
+      <Input
+        name="diesel"
+        type={"number"}
+        placeholder="Fuel volumn"
+        value={newAsset.diesel}
+        onChange={newAssetChange}
       />
+      <Spacer />
+      <div
+        {...assetImageFilesGetRootProps({ className: "dropzone" })}
+        style={{
+          border: "2px dashed var(--text300)",
+          padding: "10px",
+          borderRadius: "var(--borderRadius)",
+        }}
+      >
+        <input {...assetImageFilesGetInputProps()} />
+        <Text padding="xl" align="center">
+          Drag &apos;n&apos; drop, or click to select files
+        </Text>
+      </div>
+      <Spacer />
+      <Image src={imageUpload[0].src} />
     </Modal>
   );
 }

@@ -108,7 +108,7 @@ export default function Table({ _data }: { _data: any }) {
   }, []);
 
   if (data === undefined) {
-    return;
+    return <></>;
   }
 
   const columns = React.useMemo(
@@ -356,8 +356,8 @@ export default function Table({ _data }: { _data: any }) {
           officeNotes,
         }: any) => {
           addNewRow({ date, status, destination, confirmed, officeNotes });
-          save();
         }}
+        save={() => save()}
       ></AddModal>
     </>
   );

@@ -15,7 +15,7 @@ import {
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { AssetType } from "types/global";
+import { AssetTableObject } from "types/global";
 import Availiblity from "components/dashboard/assetPage/Availiblity";
 import Contracts from "components/dashboard/assetPage/Contracts";
 import Gallery from "components/dashboard/assetPage/Gallery";
@@ -25,7 +25,7 @@ import scss from "components/dashboard/Dashboard.module.scss";
 import DummyBugger from "../../../public/assets/bobcat-e26.png";
 import { collection, doc, getDoc, getFirestore } from "firebase/firestore";
 import { firestore } from "lib/firebase";
-import { ENGINE } from "lib/models/assetEnum";
+import { ASSET_PICK_DROP, ENGINE } from "lib/models/assetEnum";
 
 import { useDropzone } from "react-dropzone";
 import PickupModal from "src/components/dashboard/assetPage/PickupModal";
@@ -43,7 +43,14 @@ export default function Asset() {
   const [openPickup, setOpenPickup] = useState(false);
   const [openDropoff, setOpenDropoff] = useState(false);
 
-  // const [data, setData] = useState<AssetType | null>();
+  const [buttonsDisabled, setButtonsDisabled] = useState<{
+    pickup: boolean;
+    dropoff: boolean;
+  }>({
+    pickup: true,
+    dropoff: true,
+  });
+
   const data = useSelector(selectedAssetSelector);
 
   useEffect(() => {
@@ -52,24 +59,9 @@ export default function Asset() {
         //@ts-ignore
         const docSnap = await getDoc(doc(getFirestore(), "assets", id)).then(
           (asset) => {
-            console.log("asset", asset.data());
             const data = asset.data();
 
             if (data) {
-              // setData((prev) => ({
-              //   id: id || "",
-              //   name: data.name || "",
-              //   imageUrl: data.imageUrl || "",
-              //   table: data.table || [],
-              //   serialNumber: data.sn || "",
-              //   location: data.location || {
-              //     long: 42.9150826,
-              //     lat: -79.4913604,
-              //   },
-              //   engine: data.engine || ENGINE.STOPED,
-              //   machineHours: data.machineHours || "",
-              //   ...asset.data(),
-              // }));
               dispatch(
                 setSelectedAsset({
                   asset: {
@@ -82,6 +74,7 @@ export default function Asset() {
                       long: 42.9150826,
                       lat: -79.4913604,
                     },
+                    diesel: data.diesel || "",
                     engine: data.engine || ENGINE.STOPED,
                     machineHours: data.machineHours || "",
                     ...asset.data(),
@@ -98,6 +91,33 @@ export default function Asset() {
   }, [id]);
 
   useEffect(() => {
+    if (data) {
+      const dropoff = data.table.find(
+        (value: AssetTableObject, index: number) => {
+          if (value.status === ASSET_PICK_DROP.DROP_OFF) {
+            return true;
+          }
+          return false;
+        }
+      );
+
+      const pickup = data.table.find(
+        (value: AssetTableObject, index: number) => {
+          if (value.status === ASSET_PICK_DROP.PICKUP) {
+            return true;
+          }
+          return false;
+        }
+      );
+
+      setButtonsDisabled({
+        pickup: pickup ? false : true,
+        dropoff: dropoff ? false : true,
+      });
+    }
+  }, [data?.table]);
+
+  /* useEffect(() => {
     const intervalId = setInterval(async () => {
       //assign interval to a variable to clear it.
       const status = await getAssetStatusAirFleet(1);
@@ -105,7 +125,7 @@ export default function Asset() {
       console.log(status);
     }, 50000);
     return () => clearInterval(intervalId);
-  }, [dispatch]);
+  }, [dispatch]); */
 
   const MapWithNoSSR = dynamic(
     () => import("../../../components/dashboard/assetPage/Map"),
@@ -155,6 +175,7 @@ export default function Asset() {
               }}
               scale="l"
               primary
+              disabled={buttonsDisabled.pickup}
             >
               Pick up
             </Button>
@@ -164,6 +185,7 @@ export default function Asset() {
               }}
               scale="l"
               margin="m 0 m m"
+              disabled={buttonsDisabled.dropoff}
             >
               Drop off
             </Button>

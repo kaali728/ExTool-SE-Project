@@ -7,6 +7,7 @@ export type AssetType = {
   engine: string;
   location: { long: number; lat: number };
   machineHours: number;
+  diesel: "";
 };
 
 export type AssetTableObject = {
@@ -20,12 +21,16 @@ export type AssetTableObject = {
     | ASSET_PICK_DROP.PICKUP;
   confirmed: boolean;
   report?: string;
-  officeNotesAccept?: boolean[];
-  officeNotes?: string[];
+  officeNotes?: OfficeNote[];
   hours?: number;
   diesel?: number;
   images?: AssetPictureDownloadUrl;
   additionalImages?: string[];
+};
+
+export type OfficeNote = {
+  text: string;
+  checked: boolean;
 };
 
 export type AssetPictures = {
@@ -45,3 +50,15 @@ export type AssetPictureDownloadUrl = {
   fuelGuage: string;
   hoursReading: string;
 };
+
+export type AssetFormData = {
+  destination: string;
+  date: string;
+  report: string;
+  officeNotes: OfficeNote[];
+  diesel: number;
+  hours: number;
+  confirmed: boolean;
+};
+
+export type AssetFormDataDropOff = AssetFormData & { refuel: number };

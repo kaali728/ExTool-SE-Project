@@ -5,6 +5,7 @@ import {
   AssetPictureDownloadUrl,
   AssetTableObject,
   AssetType,
+  OfficeNote,
 } from "types/global";
 
 export type AssetsState = {
@@ -58,8 +59,7 @@ export const assetSlice = createSlice({
           additionalImages: string[];
           diesel: number;
           hours: number;
-          officeNotes: string[];
-          officeNotesAccept: boolean[];
+          officeNotes: OfficeNote[];
           report: string;
           confirmed: boolean;
         };
@@ -88,8 +88,6 @@ export const assetSlice = createSlice({
         action.payload.tableContent.hours;
       state.content.selectedAsset.table[index].officeNotes =
         action.payload.tableContent.officeNotes;
-      state.content.selectedAsset.table[index].officeNotesAccept =
-        action.payload.tableContent.officeNotesAccept;
       state.content.selectedAsset.table[index].report =
         action.payload.tableContent.report;
       state.content.selectedAsset.table[index].confirmed =

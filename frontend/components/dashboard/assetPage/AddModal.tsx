@@ -18,23 +18,33 @@ import { GrMapLocation } from "react-icons/gr";
 import scss from "./PickupDropoff.module.scss";
 import autoAnimate from "@formkit/auto-animate";
 
-export default function PickupModal({
+export default function AddModal({
   open,
   setOpen,
   onSubmit,
+  save,
 }: {
   open: boolean;
   setOpen: (arg: boolean) => any;
   onSubmit: ({ date, status, destination, confirmed, officeNotes }: any) => any;
+  save: () => {};
 }) {
   const dispatch = useDispatch();
   const officeNotesRef = useRef(null);
+  const [toggleSave, setToggleSave] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (toggleSave) {
+      save();
+      setToggleSave(false);
+    }
+  }, [toggleSave]);
 
   const [formData, setFormData] = useState({
     destination: "",
     date: "",
     report: "",
-    officeNotes: [""],
+    officeNotes: [{ text: "", checked: false }],
     confirmed: false,
     status: "",
   });
@@ -48,7 +58,7 @@ export default function PickupModal({
         ...prev,
         officeNotes: prev.officeNotes.map((officeNote, index) => {
           if (index === noteIndex) {
-            return value;
+            return { text: value, checked: false };
           }
           return officeNote;
         }),
@@ -80,11 +90,12 @@ export default function PickupModal({
       officeNotes: formData.officeNotes,
     });
 
+    setToggleSave(true);
     setFormData({
       destination: "",
       date: "",
       report: "",
-      officeNotes: [""],
+      officeNotes: [],
       confirmed: false,
       status: "",
     });
@@ -148,44 +159,46 @@ export default function PickupModal({
         </Text>
 
         <div ref={officeNotesRef}>
-          {formData.officeNotes.map((officeNote: string, index: number) => (
-            <div key={index}>
-              <Flex
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <span></span>
-                <Button
-                  onClick={() => {
-                    let _officeNotes = formData.officeNotes;
-                    _officeNotes.splice(index, 1);
-                    setFormData((prev) => ({
-                      ...prev,
-                      officeNotes: _officeNotes,
-                    }));
-                  }}
-                  scale="s"
-                  margin="m 0"
+          {formData.officeNotes.map(
+            (officeNote: { text: string; checked: boolean }, index: number) => (
+              <div key={index}>
+                <Flex
+                  flexDirection="row"
+                  alignItems="center"
+                  justifyContent="space-between"
                 >
-                  Remove
-                </Button>
-              </Flex>
-              <textarea
-                key={index}
-                name={"officeNote" + index}
-                value={officeNote}
-                onChange={handleChange}
-              />
-            </div>
-          ))}
+                  <span></span>
+                  <Button
+                    onClick={() => {
+                      let _officeNotes = formData.officeNotes;
+                      _officeNotes.splice(index, 1);
+                      setFormData((prev) => ({
+                        ...prev,
+                        officeNotes: _officeNotes,
+                      }));
+                    }}
+                    scale="s"
+                    margin="m 0"
+                  >
+                    Remove
+                  </Button>
+                </Flex>
+                <textarea
+                  key={index}
+                  name={"officeNote" + index}
+                  value={officeNote.text}
+                  onChange={handleChange}
+                />
+              </div>
+            )
+          )}
         </div>
 
         <Button
           onClick={() => {
             setFormData((prev) => ({
               ...prev,
-              officeNotes: [...prev.officeNotes, ""],
+              officeNotes: [...prev.officeNotes, { text: "", checked: false }],
             }));
           }}
         >

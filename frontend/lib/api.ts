@@ -16,6 +16,7 @@ export async function createNewAsset(asset: any) {
     engine: asset.engine,
     location: asset.location,
     machineHours: asset.machineHours,
+    diesel: asset.diesel,
   });
   console.log("Document written with ID: ", docRef.id);
   toast.success("Asset created successfully");
@@ -32,22 +33,22 @@ export async function updateTable(id: any, table: AssetTableObject[]) {
   toast.success("Table saved");
 }
 
-export async function getAssetStatusAirFleet(id: number){
+export async function getAssetStatusAirFleet(id: number) {
   const auth = {
     username: "Parshome@yahoo.com",
-    password: "12345678Aa1"
-  }
+    password: "12345678Aa1",
+  };
   let idTest = "185516";
-  const url = `https://api.airiqfleet.com/v2/assets/${idTest}/status`
-  let basicAuth = 'Basic ' + btoa(auth.username + ':' + auth.password);
+  const url = `https://api.airiqfleet.com/v2/assets/${idTest}/status`;
+  let basicAuth = "Basic " + btoa(auth.username + ":" + auth.password);
   let headers = {
-    'Content-Type': 'text/json',
-    'Access-Control-Allow-Origin': "*",
+    "Content-Type": "text/json",
+    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-    'Authorization': basicAuth
+    Authorization: basicAuth,
   };
   try {
-    const res = await axios.get(url, { headers, withCredentials: false});
+    const res = await axios.get(url, { headers, withCredentials: false });
     const data = JSON.stringify(res.data);
     console.log("getAssetStatusAirFleet", data);
     return data;

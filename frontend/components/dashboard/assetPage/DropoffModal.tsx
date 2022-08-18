@@ -24,7 +24,11 @@ import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { uploadAdditionalFiles, uploadImagesFiles } from "./uploadImages";
-import { AssetTableObject } from "types/global";
+import {
+  AssetFormDataDropOff,
+  AssetTableObject,
+  OfficeNote,
+} from "types/global";
 
 export default function DropoffModal({
   open,
@@ -36,12 +40,11 @@ export default function DropoffModal({
   data: any;
 }) {
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AssetFormDataDropOff>({
     destination: "",
     date: "",
     report: "",
-    officeNotes: "Please call (647)-403 3688 once the machine is delivered.",
-    officeNotesAccept: false,
+    officeNotes: [],
     diesel: 0,
     hours: 0,
     refuel: 0,
@@ -92,6 +95,7 @@ export default function DropoffModal({
             return {
               date: value.date,
               destination: value.destination,
+              officeNotes: value.officeNotes,
               index: index,
             };
           }
@@ -106,6 +110,7 @@ export default function DropoffModal({
         ...prev,
         date: foundDropOff.date,
         destination: foundDropOff.destination,
+        officeNotes: foundDropOff.officeNotes ?? [],
       }));
     }
   }, [selectedAsset, open]);
@@ -121,9 +126,7 @@ export default function DropoffModal({
           destination: "",
           date: "",
           report: "",
-          officeNotes:
-            "Please call (647)-403 3688 once the machine is delivered.",
-          officeNotesAccept: false,
+          officeNotes: [],
           diesel: 0,
           hours: 0,
           refuel: 0,
@@ -151,14 +154,25 @@ export default function DropoffModal({
   const handleChange = (e: any) => {
     const { name, value, checked } = e.target;
 
+    if (name.includes("officeNotes")) {
+      const noteIndex = Number(name.replace("officeNotes", ""));
+      setFormData((prev) => ({
+        ...prev,
+        officeNotes: prev.officeNotes.map((officeNote, index) => {
+          if (index === noteIndex) {
+            return { ...officeNote, checked };
+          }
+          return officeNote;
+        }),
+      }));
+
+      return;
+    }
+
     switch (name) {
       case "diesel":
       case "hours": {
         setFormData((prev) => ({ ...prev, [name]: parseInt(value) }));
-        break;
-      }
-      case "officeNotesAccept": {
-        setFormData((prev) => ({ ...prev, [name]: checked }));
         break;
       }
       default: {
@@ -179,8 +193,16 @@ export default function DropoffModal({
     return isNull;
   }
 
+  function checkIfAllOfficeNotesChecked() {
+    let allChecked: boolean[] = formData.officeNotes.map(
+      (officeNote: OfficeNote) => {
+        return officeNote.checked;
+      }
+    );
+    return allChecked.includes(false);
+  }
   const handleSubmit = async () => {
-    if (!formData.officeNotesAccept) {
+    if (checkIfAllOfficeNotesChecked()) {
       toast.error("Accept the office note!");
       return true;
     }
@@ -219,7 +241,6 @@ export default function DropoffModal({
           diesel: formData.diesel,
           hours: formData.hours,
           officeNotes: formData.officeNotes,
-          officeNotesAccept: formData.officeNotesAccept,
           report: formData.report,
           confirmed: true,
         },
@@ -377,7 +398,7 @@ export default function DropoffModal({
             onChange={handleChange}
             type="range"
             min="0"
-            max="25"
+            max={selectedAsset?.diesel}
           />
 
           <Text style={{ width: "30px" }} weight="bold" scale="m" align="right">
@@ -406,18 +427,26 @@ export default function DropoffModal({
           <Text style={{ marginLeft: 5 }}>Ls</Text>
         </Flex>
 
-        <Flex flexDirection="row" margin="xl 0 0 0">
-          <input
-            type="checkbox"
-            name="officeNotesAccept"
-            onClick={handleChange}
-            defaultChecked={formData.officeNotesAccept}
-            id="officeNotesAccept"
-          />
-          <label style={{ marginLeft: "10px" }} htmlFor="officeNotesAccept">
-            {formData.officeNotes}
-          </label>
-        </Flex>
+        <Text margin="xl 0 m 0" scale="s">
+          Office Notes
+        </Text>
+        {formData.officeNotes.map((officeNote: OfficeNote, index) => (
+          <Flex key={index} flexDirection="row" margin="xl 0 0 0">
+            <input
+              type="checkbox"
+              name={"officeNotes" + index}
+              onChange={handleChange}
+              defaultChecked={officeNote.checked}
+              id={"officeNotes" + index}
+            />
+            <label
+              style={{ marginLeft: "10px" }}
+              htmlFor={"officeNotes" + index}
+            >
+              {officeNote.text}
+            </label>
+          </Flex>
+        ))}
       </Flex>
     </Modal>
   );
