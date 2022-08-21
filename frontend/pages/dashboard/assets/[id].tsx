@@ -15,7 +15,7 @@ import {
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { AssetTableObject } from "types/global";
+import { AssetTableObject, StatusDataResponse } from "types/global";
 import Availiblity from "components/dashboard/assetPage/Availiblity";
 import Contracts from "components/dashboard/assetPage/Contracts";
 import Gallery from "components/dashboard/assetPage/Gallery";
@@ -117,10 +117,14 @@ export default function Asset() {
     }
   }, [data?.table]);
 
-  /* useEffect(() => {
+  /*   useEffect(() => {
+    if (data?.serialNumber === undefined) return;
+
     const intervalId = setInterval(async () => {
       //assign interval to a variable to clear it.
-      const status = await getAssetStatusAirFleet(1);
+      const status: StatusDataResponse = await getAssetStatusAirFleet(
+        data?.serialNumber
+      );
       let assetEdited = data;
       console.log(status);
     }, 50000);

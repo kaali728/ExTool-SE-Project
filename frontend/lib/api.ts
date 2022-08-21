@@ -33,23 +33,11 @@ export async function updateTable(id: any, table: AssetTableObject[]) {
   toast.success("Table saved");
 }
 
-export async function getAssetStatusAirFleet(id: number) {
-  const auth = {
-    username: "Parshome@yahoo.com",
-    password: "12345678Aa1",
-  };
-  let idTest = "185516";
-  const url = `https://api.airiqfleet.com/v2/assets/${idTest}/status`;
-  let basicAuth = "Basic " + btoa(auth.username + ":" + auth.password);
-  let headers = {
-    "Content-Type": "text/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-    Authorization: basicAuth,
-  };
+export async function getAssetStatusAirFleet(serialNumber: string) {
   try {
-    const res = await axios.get(url, { headers, withCredentials: false });
-    const data = JSON.stringify(res.data);
+    let snTest = "912639";
+    const res = await fetch(`/api/airfleet?sn=${snTest}`);
+    const data = await res.json();
     console.log("getAssetStatusAirFleet", data);
     return data;
   } catch (error) {
