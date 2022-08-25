@@ -25,6 +25,7 @@ import {
   FiArrowRight,
   FiSkipBack,
   FiSkipForward,
+  FiExternalLink,
 } from "react-icons/fi";
 import { FaArrowLeft } from "react-icons/fa";
 import { updateTable } from "lib/api";
@@ -118,18 +119,20 @@ export default function Table({ _data }: { _data: any }) {
         header: () => <span>Date</span>,
         footer: (props) => props.column.id,
         cell: ({ cell }) => (
-          <input
-            onChange={(e) =>
-              instance.options.meta?.updateData(
-                cell.row.index,
-                "date",
-                e.target.value
-              )
-            }
-            value={cell.getValue()}
-            type={"datetime-local"}
-            id={"input"}
-          />
+          <Flex>
+            <input
+              onChange={(e) =>
+                instance.options.meta?.updateData(
+                  cell.row.index,
+                  "date",
+                  e.target.value
+                )
+              }
+              value={cell.getValue()}
+              type={"datetime-local"}
+              id={"input"}
+            />
+          </Flex>
         ),
       }),
       table.createDataColumn((row) => row.status, {
@@ -139,27 +142,19 @@ export default function Table({ _data }: { _data: any }) {
           !cell.row.original?.confirmed &&
           cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
           cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
-            <select
-              onChange={(e) =>
-                instance.options.meta?.updateData(
-                  cell.row.index,
-                  "status",
-                  e.target.value
-                )
-              }
-              value={cell.getValue() === "" ? "Select" : cell.getValue()}
+            <Flex
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
             >
-              <option value={"Select"}>Select</option>
-              <option value={ASSET_PICK_DROP.PICKUP}>
-                {ASSET_PICK_DROP.PICKUP}
-              </option>
-              <option value={ASSET_PICK_DROP.DROP_OFF}>
-                {ASSET_PICK_DROP.DROP_OFF}
-              </option>
-              <option value={ASSET_PICK_DROP.ASSET_CREATED}>
-                {ASSET_PICK_DROP.ASSET_CREATED}
-              </option>
-            </select>
+              <Text>{cell.getValue()}</Text>
+              <FiExternalLink
+                onClick={() => {
+                  console.log("open pickup information");
+                  console.log(cell.row.original);
+                }}
+              />
+            </Flex>
           ) : (
             <div
               className={
