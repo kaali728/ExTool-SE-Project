@@ -5,20 +5,23 @@ import Table from "./Table";
 import { GoLocation, GoTools } from "react-icons/go";
 import { FaClock, FaHeartbeat } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { selectedAssetSelector } from "lib/slices/assetSlice";
 
-export default function Overview({ data }: any) {
+export default function Overview() {
   const [address, setAddress] = useState();
+  const data = useSelector(selectedAssetSelector);
 
   useEffect(() => {
     fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${data.location.long}&lon=${data.location.lat}`
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${data?.location.lat}&lon=${data?.location.long}`
     )
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
+        //console.log(responseJson);
         setAddress(responseJson.display_name);
       });
-  }, []);
+  }, [data]);
 
   return (
     <Flex

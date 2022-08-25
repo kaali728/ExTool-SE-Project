@@ -3,8 +3,6 @@ import {
   Flex,
   Icon,
   Image,
-  Input,
-  Modal,
   Spacer,
   Tab,
   Tabs,
@@ -14,7 +12,7 @@ import {
 } from "@findnlink/neuro-ui";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AssetTableObject, StatusDataResponse } from "types/global";
 import Availiblity from "components/dashboard/assetPage/Availiblity";
 import Contracts from "components/dashboard/assetPage/Contracts";
@@ -22,9 +20,7 @@ import Gallery from "components/dashboard/assetPage/Gallery";
 import Overview from "components/dashboard/assetPage/Overview";
 import Service from "components/dashboard/assetPage/Service";
 import scss from "components/dashboard/Dashboard.module.scss";
-import DummyBugger from "../../../public/assets/bobcat-e26.png";
-import { collection, doc, getDoc, getFirestore } from "firebase/firestore";
-import { firestore } from "lib/firebase";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { ASSET_PICK_DROP, ENGINE } from "lib/models/assetEnum";
 
 import { useDropzone } from "react-dropzone";
@@ -32,7 +28,7 @@ import PickupModal from "src/components/dashboard/assetPage/PickupModal";
 import DropoffModal from "src/components/dashboard/assetPage/DropoffModal";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector, setSelectedAsset } from "lib/slices/assetSlice";
-import { getAssetStatusAirFleet } from "lib/api";
+import { getAssetStatusAirFleet, updateSelectedAsset } from "lib/api";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 
 export default function Asset() {
@@ -62,6 +58,8 @@ export default function Asset() {
             const data = asset.data();
 
             if (data) {
+              getInfoFromApi(data);
+
               dispatch(
                 setSelectedAsset({
                   asset: {
@@ -117,19 +115,47 @@ export default function Asset() {
     }
   }, [data?.table]);
 
-  /*   useEffect(() => {
-    if (data?.serialNumber === undefined) return;
+  const isEngineStopped = (voltage: number) => {
+    return voltage > 13000 ? ENGINE.RUNNING : ENGINE.STOPED;
+  };
 
-    const intervalId = setInterval(async () => {
-      //assign interval to a variable to clear it.
-      const status: StatusDataResponse = await getAssetStatusAirFleet(
-        data?.serialNumber
-      );
-      let assetEdited = data;
-      console.log(status);
-    }, 50000);
-    return () => clearInterval(intervalId);
-  }, [dispatch]); */
+  const getInfoFromApi = async (data: any) => {
+    const status: StatusDataResponse = await getAssetStatusAirFleet(
+      data?.serialNumber
+    );
+    let assetEdited = data;
+
+    console.log(status);
+    if (status === undefined) return;
+    if (
+      status.latitude !== assetEdited.location.lat ||
+      status.longitude !== assetEdited.location.long ||
+      status.engineHours !== assetEdited.engineHours
+    ) {
+      await updateSelectedAsset(id, {
+        location: {
+          long: status.longitude,
+          lat: status.latitude,
+        },
+        engine: isEngineStopped(status.voltage),
+        machineHours: status.engineHours,
+      });
+    }
+
+    dispatch(
+      setSelectedAsset({
+        asset: {
+          ...assetEdited,
+          location: {
+            long: status.longitude,
+            lat: status.latitude,
+          },
+          engine: isEngineStopped(status.voltage),
+          machineHours: status.engineHours || 0,
+        },
+      })
+    );
+  };
 
   const MapWithNoSSR = dynamic(
     () => import("../../../components/dashboard/assetPage/Map"),
@@ -154,7 +180,7 @@ export default function Asset() {
         </Flex>
 
         <div className={scss.map}>
-          <MapWithNoSSR name={data.name} location={data.location} />
+          <MapWithNoSSR />
           <div className={scss.gradient}></div>
         </div>
 
@@ -217,7 +243,7 @@ export default function Asset() {
           </TabsHeader>
           <TabsContent margin="0 0 xl 0" padding="xl 0 0 0">
             {[
-              <Overview data={data} key={1} />,
+              <Overview key={1} />,
               <Service key={2} />,
               <Gallery key={3} />,
               <Contracts key={4} />,

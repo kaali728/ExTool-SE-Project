@@ -1,7 +1,7 @@
 import axios from "axios";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
-import { AssetTableObject } from "types/global";
+import { AssetTableObject, AssetType } from "types/global";
 import { firestore } from "./firebase";
 import { ENGINE } from "./models/assetEnum";
 
@@ -33,12 +33,19 @@ export async function updateTable(id: any, table: AssetTableObject[]) {
   toast.success("Table saved");
 }
 
+export async function updateSelectedAsset(id: any, assetData: any){
+  const assetDoc = doc(firestore, "assets", id);
+
+  await updateDoc(assetDoc, {...assetData});
+
+  toast.success("Api Fetched Data successfully saved")
+}
+
+
 export async function getAssetStatusAirFleet(serialNumber: string) {
   try {
-    let snTest = "912639";
-    const res = await fetch(`/api/airfleet?sn=${snTest}`);
+    const res = await fetch(`/api/airfleet?sn=${serialNumber}`);
     const data = await res.json();
-    console.log("getAssetStatusAirFleet", data);
     return data;
   } catch (error) {
     console.log("Error on Airefleet get status", error);
