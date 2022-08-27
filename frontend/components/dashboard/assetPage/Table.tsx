@@ -53,10 +53,10 @@ type MyTableGenerics = typeof table.generics;
 
 // Give our default column cell renderer editing superpowers!
 const defaultColumn: Partial<ColumnDef<MyTableGenerics>> = {
-  cell: ({ getValue, row: { index }, column: { id }, instance }) => {
+  cell: function Cell({ getValue, row: { index }, column: { id }, instance }) {
     const initialValue = getValue();
     // We need to keep and update the state of the cell normally
-    const [value, setValue] = React.useState(initialValue);
+    const [value, setValue] = useState(initialValue);
 
     // When the input is blurred, we'll call our table meta's updateData function
     const onBlur = () => {
@@ -112,36 +112,39 @@ export default function Table({ _data }: { _data: any }) {
     return <></>;
   }
 
+  // eslint-disable-next-line
   const columns = React.useMemo(
     () => [
       table.createDataColumn((row) => row.date, {
         id: "date",
         header: () => <span>Date</span>,
         footer: (props) => props.column.id,
-        cell: ({ cell }) => (
-          <Flex>
-            <input
-              onChange={(e) =>
-                instance.options.meta?.updateData(
-                  cell.row.index,
-                  "date",
-                  e.target.value
-                )
-              }
-              value={cell.getValue()}
-              type={"datetime-local"}
-              id={"input"}
-            />
-          </Flex>
-        ),
+        cell: function Cell({ cell }) {
+          return (
+            <Flex>
+              <input
+                onChange={(e) =>
+                  instance.options.meta?.updateData(
+                    cell.row.index,
+                    "date",
+                    e.target.value
+                  )
+                }
+                value={cell.getValue()}
+                type={"datetime-local"}
+                id={"input"}
+              />
+            </Flex>
+          );
+        },
       }),
       table.createDataColumn((row) => row.status, {
         id: "status",
         header: () => <span>Status</span>,
-        cell: ({ cell }) =>
-          !cell.row.original?.confirmed &&
-          cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
-          cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+        cell: function Cell({ cell }) {
+          return !cell.row.original?.confirmed &&
+            cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
+            cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
             <Flex
               flexDirection="row"
               alignItems="center"
@@ -165,7 +168,8 @@ export default function Table({ _data }: { _data: any }) {
             >
               {cell.getValue()}
             </div>
-          ),
+          );
+        },
         footer: (props) => props.column.id,
         size: 10,
       }),
@@ -178,6 +182,7 @@ export default function Table({ _data }: { _data: any }) {
     []
   );
 
+  // eslint-disable-next-line
   const instance = useTableInstance(table, {
     data,
     columns,
@@ -207,6 +212,7 @@ export default function Table({ _data }: { _data: any }) {
     debugTable: true,
   });
 
+  // eslint-disable-next-line
   useEffect(() => {
     setData(selectedAsset?.table);
   }, [selectedAsset]);
@@ -237,6 +243,7 @@ export default function Table({ _data }: { _data: any }) {
     setShowSaveButton(false);
   };
 
+  // eslint-disable-next-line
   useEffect(() => {
     if (data) {
       setShowSaveButtonToggle(true);

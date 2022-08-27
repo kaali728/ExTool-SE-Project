@@ -47,12 +47,12 @@ export default function Overview() {
         </Text>
 
         <Flex flexDirection="row" alignItems="center">
-          {data.engine === "Running" ? (
+          {data && data.engine === "Running" ? (
             <div className={scss.runningAnimation}></div>
           ) : (
             <div className={scss.offline}></div>
           )}
-          <Text margin="0 0 0 l">{data.engine}</Text>
+          <Text margin="0 0 0 l">{data && data.engine}</Text>
         </Flex>
 
         <Spacer />
@@ -62,7 +62,7 @@ export default function Overview() {
             Machine Hours:
           </Flex>
         </Text>
-        <Text>{data.machineHours} hours</Text>
+        <Text>{data && data.machineHours} hours</Text>
       </div>
       <div className={scss.table + " " + scss.tabsContainer}>
         <Table _data={data} />
