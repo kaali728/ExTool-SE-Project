@@ -9,7 +9,9 @@ import {
     sendPasswordResetEmail
 } from "firebase/auth";
 import { getFirestore, collection, where, getDocs, query, limit, DocumentData, DocumentSnapshot } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { url } from "inspector";
+import toast from "react-hot-toast";
 
 const firebaseConfig = {
     apiKey:  process.env.NEXT_PUBLIC_FIREBASE_APIKEY,
@@ -46,6 +48,13 @@ export const STATE_CHANGED = 'state_changed';
 
 
 // Helper functions
+
+
+export async function getDownloadURlFromPath(filePath: string): Promise<string> {
+  const starsRef = ref(storage, filePath);
+  let downloadUrl = await getDownloadURL(starsRef);
+  return downloadUrl;
+}
 
 
 /**`

@@ -42,6 +42,12 @@
     width: 100%;
   }
 
+  .icon {
+    path {
+      stroke: var(--text200);
+    }
+  }
+
   .pickedUpCell {
     color: rgb(235, 77, 77) !important;
   }

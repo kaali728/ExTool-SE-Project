@@ -40,6 +40,7 @@ import { randomUUID } from "crypto";
 import { v4 } from "uuid";
 import { AssetTableObject } from "types/global";
 import AddModal from "./AddModal";
+import CellInformationModal from "./CellInformationModal";
 
 let table = createTable()
   .setRowType<AssetTableObject>()
@@ -102,6 +103,9 @@ export default function Table({ _data }: { _data: any }) {
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [showSaveButtonToggle, setShowSaveButtonToggle] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openCellInformationModal, setOpenCellInformationModal] =
+    useState(false);
+  const [selectedCellData, setSelectedCellData] = useState<AssetTableObject>();
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
   useEffect(() => {
@@ -142,32 +146,37 @@ export default function Table({ _data }: { _data: any }) {
         id: "status",
         header: () => <span>Status</span>,
         cell: function Cell({ cell }) {
-          return !cell.row.original?.confirmed &&
-            cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
-            cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+          return (
             <Flex
               flexDirection="row"
               alignItems="center"
               justifyContent="space-between"
             >
-              <Text>{cell.getValue()}</Text>
+              {!cell.row.original?.confirmed &&
+              cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
+              cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+                <Text>{cell.getValue()}</Text>
+              ) : (
+                <div
+                  className={
+                    cell.getValue() === ASSET_PICK_DROP.PICKEDUP
+                      ? scss.pickedUpCell
+                      : scss.dropedOffCell
+                  }
+                >
+                  {cell.getValue()}
+                </div>
+              )}
               <FiExternalLink
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   console.log("open pickup information");
                   console.log(cell.row.original);
+                  setSelectedCellData(cell.row.original);
+                  setOpenCellInformationModal(true);
                 }}
               />
             </Flex>
-          ) : (
-            <div
-              className={
-                cell.getValue() === ASSET_PICK_DROP.PICKEDUP
-                  ? scss.pickedUpCell
-                  : scss.dropedOffCell
-              }
-            >
-              {cell.getValue()}
-            </div>
           );
         },
         footer: (props) => props.column.id,
@@ -361,6 +370,11 @@ export default function Table({ _data }: { _data: any }) {
         }}
         save={() => save()}
       ></AddModal>
+      <CellInformationModal
+        open={openCellInformationModal}
+        setOpen={setOpenCellInformationModal}
+        cellData={selectedCellData}
+      ></CellInformationModal>
     </>
   );
 }
