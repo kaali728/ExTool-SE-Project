@@ -12,5 +12,6 @@ export enum ASSET_PICK_DROP {
   DROP_OFF = "Drop off",
   PICKEDUP = "Picked up",
   DROPEDOFF = "Droped off",
-  ASSET_CREATED = "Asset created"
+  ASSET_CREATED = "Asset created",
+  AWAITING_PAYMENT = "Awaiting Payment",
 }

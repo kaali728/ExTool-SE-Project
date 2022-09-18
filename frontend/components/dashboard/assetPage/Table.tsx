@@ -154,18 +154,20 @@ export default function Table({ _data }: { _data: any }) {
             >
               {!cell.row.original?.confirmed &&
               cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
-              cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+              cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF &&
+              cell.getValue() !== ASSET_PICK_DROP.AWAITING_PAYMENT ? (
                 <Text>{cell.getValue()}</Text>
               ) : (
-                <div
-                  className={
-                    cell.getValue() === ASSET_PICK_DROP.PICKEDUP
+                <Text
+                  _class={
+                    cell.getValue() === ASSET_PICK_DROP.PICKEDUP ||
+                    cell.getValue() === ASSET_PICK_DROP.AWAITING_PAYMENT
                       ? scss.pickedUpCell
                       : scss.dropedOffCell
                   }
                 >
                   {cell.getValue()}
-                </div>
+                </Text>
               )}
               <FiExternalLink
                 style={{ cursor: "pointer" }}

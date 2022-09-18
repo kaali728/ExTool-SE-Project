@@ -134,6 +134,9 @@ export default function AddModal({
           <option value={ASSET_PICK_DROP.DROP_OFF}>
             {ASSET_PICK_DROP.DROP_OFF}
           </option>
+          <option value={ASSET_PICK_DROP.AWAITING_PAYMENT}>
+            {ASSET_PICK_DROP.AWAITING_PAYMENT}
+          </option>
         </select>
 
         <Text margin="xl 0 m 0" scale="s">
