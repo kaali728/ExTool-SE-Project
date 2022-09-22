@@ -34,12 +34,12 @@ export type OfficeNote = {
 };
 
 export type AssetPictures = {
-  front: File;
-  rightSide: File;
-  leftSide: File;
-  back: File;
-  fuelGuage: File;
-  hoursReading: File;
+  front: File | string;
+  rightSide: File | string;
+  leftSide: File | string;
+  back: File | string;
+  fuelGuage: File | string;
+  hoursReading: File | string;
 };
 
 export type AssetPictureDownloadUrl = {
@@ -64,18 +64,18 @@ export type AssetFormData = {
 export type AssetFormDataDropOff = AssetFormData & { refuel: number };
 
 export type StatusDataResponse = {
-  id: number,
-  statusDateTime: string,
-  speed: number,
-  odometer: number,
-  engineHours: number,
-  voltage: number,
-  locationDateTime: string,
-  latitude: number,
-  longitude: number,
-  address: string,
-  city: string,
-  state: string,
-  zip: string,
-  country: string
-}
+  id: number;
+  statusDateTime: string;
+  speed: number;
+  odometer: number;
+  engineHours: number;
+  voltage: number;
+  locationDateTime: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+};

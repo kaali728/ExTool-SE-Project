@@ -11,13 +11,14 @@ import {
   CardContent,
 } from "@findnlink/neuro-ui";
 import { getDownloadURlFromPath } from "lib/firebase";
+import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { GrMapLocation } from "react-icons/gr";
 import { useDispatch } from "react-redux";
-import { AssetTableObject } from "types/global";
+import { AssetPictures, AssetTableObject } from "types/global";
 import scss from "./Table.module.scss";
 
 export default function CellInformationModal({
@@ -27,21 +28,54 @@ export default function CellInformationModal({
 }: {
   open: boolean;
   setOpen: (arg: boolean) => any;
-  cellData?: AssetTableObject;
+  cellData: AssetTableObject;
 }) {
   const dispatch = useDispatch();
 
-  if (cellData === undefined) return <></>;
+  //if (cellData === undefined) return <></>;
 
-  function getDownloadUrlImage(filePath: string) {
-    let url = "/test.jpg";
-    getDownloadURlFromPath(filePath).then((downloadUrl) => {
-      url = downloadUrl;
-    });
-    console.log(url);
+  const [images, setImages] = useState<AssetPictures>({
+    front: "",
+    rightSide: "",
+    leftSide: "",
+    back: "",
+    fuelGuage: "",
+    hoursReading: "",
+  });
 
-    return url;
-  }
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+
+  useAsyncEffect(async () => {
+    if (cellData.images) {
+      setImages({
+        front: await getDownloadURlFromPath(cellData.images!.front),
+        rightSide: await getDownloadURlFromPath(cellData.images!.rightSide),
+        leftSide: await getDownloadURlFromPath(cellData.images!.leftSide),
+        back: await getDownloadURlFromPath(cellData.images!.back),
+        fuelGuage: await getDownloadURlFromPath(cellData.images!.fuelGuage),
+        hoursReading: await getDownloadURlFromPath(
+          cellData.images!.hoursReading
+        ),
+      });
+    }
+  }, []);
+
+  useAsyncEffect(async () => {
+    if (cellData.additionalImages && cellData.additionalImages.length > 0) {
+      console.log(additionalImages);
+      let addImages: any = [];
+      cellData.additionalImages.map(async (imagePath) => {
+        let url = await getDownloadURlFromPath(imagePath);
+        addImages.push(url);
+      });
+
+      setAdditionalImages(addImages);
+    }
+  }, [cellData]);
+
+  // useEffect(() => {
+  //   console.log(additionalImages);
+  // }, [additionalImages]);
 
   return (
     <Modal
@@ -72,88 +106,175 @@ export default function CellInformationModal({
           Date
         </Text>
         <Text weight="bold">{cellData.date}</Text>
-        {cellData.confirmed && (
+
+        <Text margin="xl 0 m 0" scale="s">
+          Report
+        </Text>
+        <Text weight="bold">{cellData.report}</Text>
+
+        <Text margin="xl 0 m 0" scale="s">
+          Hours
+        </Text>
+        <Text weight="bold">{cellData.hours}</Text>
+
+        <Text margin="xl 0 m 0" scale="s">
+          Diesel
+        </Text>
+        <Text weight="bold">{cellData.diesel}</Text>
+
+        <Text margin="xl 0 m 0" scale="s">
+          Office Notes
+        </Text>
+        {cellData.officeNotes?.map((officeNote: any) => (
+          <Flex flexDirection="row">
+            <input type={"checkbox"} value={officeNote.checked}></input>
+            <Text margin="m" weight="bold">
+              {officeNote.text}
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+
+      {cellData.confirmed && (
+        <div className={"imageContainer"}>
           <Flex>
             <Text margin="xl 0 m 0" scale="s">
               Pictures
             </Text>
-            <Grid>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.front)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>Front</Text>
-                </CardContent>
-              </Card>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.back)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>Back</Text>
-                </CardContent>
-              </Card>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.rightSide)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>rightSide</Text>
-                </CardContent>
-              </Card>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.leftSide)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>leftSide</Text>
-                </CardContent>
-              </Card>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.hoursReading)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>hoursReading</Text>
-                </CardContent>
-              </Card>
-              <Card pointer>
-                <CardHeader>
-                  <Image
-                    width={30}
-                    height={30}
-                    src={getDownloadUrlImage(cellData.images!.fuelGuage)}
-                  />
-                </CardHeader>
-                <CardContent>
-                  <Text>Fuel Guage</Text>
-                </CardContent>
-              </Card>
-            </Grid>
+            {images.front !== "" && (
+              <Grid>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.front as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Front
+                    </Text>
+                  </CardContent>
+                </Card>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.back as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Back
+                    </Text>
+                  </CardContent>
+                </Card>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.rightSide as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Right side
+                    </Text>
+                  </CardContent>
+                </Card>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.leftSide as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Left side
+                    </Text>
+                  </CardContent>
+                </Card>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.hoursReading as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Hours reading
+                    </Text>
+                  </CardContent>
+                </Card>
+                <Card pointer margin="0">
+                  <CardHeader margin="0">
+                    <a
+                      href={images.hoursReading as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        width={200}
+                        height={200}
+                        src={images.fuelGuage as string}
+                      />
+                    </a>
+                  </CardHeader>
+                  <CardContent margin="0">
+                    <Text margin="0 0 l 0" align="center">
+                      Fuel guage
+                    </Text>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
           </Flex>
-        )}
-      </Flex>
+        </div>
+      )}
+      {additionalImages.length > 0 ? (
+        <ImageGallery margin="xl 0" showPaginate>
+          {additionalImages.map((image: any, index: number) => (
+            <Image key={index} src={image} />
+          ))}
+        </ImageGallery>
+      ) : null}
     </Modal>
   );
 }

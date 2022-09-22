@@ -417,11 +417,13 @@ export default function Table({ _data }: { _data: any }) {
         save={() => save()}
         selectedCellData={selectedCellData}
       ></RowModal>
-      <CellInformationModal
-        open={openCellInformationModal}
-        setOpen={setOpenCellInformationModal}
-        cellData={selectedCellData}
-      ></CellInformationModal>
+      {selectedCellData && (
+        <CellInformationModal
+          open={openCellInformationModal}
+          setOpen={setOpenCellInformationModal}
+          cellData={selectedCellData}
+        ></CellInformationModal>
+      )}
     </>
   );
 }

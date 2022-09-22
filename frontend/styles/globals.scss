@@ -313,6 +313,10 @@ hr {
   margin: 0;
 }
 
+.imageContainer {
+  min-width: 400px;
+}
+
 .leaflet-container {
   .leaflet-left {
     left: unset !important;
@@ -328,10 +332,16 @@ hr {
     }
   }
 
-  @media (max-width: 640px) {
+  @media only screen and (max-width: 640px) {
     .leaflet-left {
       opacity: 1;
       transform: translateX(-10px);
     }
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .imageContainer {
+    min-width: 200px !important;
   }
 }
