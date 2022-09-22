@@ -17,17 +17,22 @@ import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { GrMapLocation } from "react-icons/gr";
 import scss from "./PickupDropoff.module.scss";
 import autoAnimate from "@formkit/auto-animate";
+import { AssetTableObject } from "types/global";
 
-export default function AddModal({
+export default function RowModal({
   open,
   setOpen,
   onSubmit,
   save,
+  title,
+  selectedCellData,
 }: {
   open: boolean;
   setOpen: (arg: boolean) => any;
   onSubmit: ({ date, status, destination, confirmed, officeNotes }: any) => any;
   save: () => {};
+  title: string;
+  selectedCellData?: AssetTableObject;
 }) {
   const dispatch = useDispatch();
   const officeNotesRef = useRef(null);
@@ -48,6 +53,21 @@ export default function AddModal({
     confirmed: false,
     status: "",
   });
+
+  useEffect(() => {
+    if (selectedCellData) {
+      setFormData({
+        destination: selectedCellData.destination,
+        date: selectedCellData.date,
+        report: selectedCellData.report!,
+        officeNotes: selectedCellData.officeNotes
+          ? selectedCellData.officeNotes
+          : [],
+        confirmed: selectedCellData.confirmed,
+        status: selectedCellData.status,
+      });
+    }
+  }, [selectedCellData]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -120,7 +140,7 @@ export default function AddModal({
       }}
     >
       <Text weight="bold" scale="xl">
-        Add new row
+        {title}
       </Text>
       <Flex>
         <Text margin="xl 0 m 0" scale="s">

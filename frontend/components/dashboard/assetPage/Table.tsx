@@ -39,7 +39,7 @@ import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import { randomUUID } from "crypto";
 import { v4 } from "uuid";
 import { AssetTableObject } from "types/global";
-import AddModal from "./AddModal";
+import RowModal from "./RowModal";
 import CellInformationModal from "./CellInformationModal";
 
 let table = createTable()
@@ -105,7 +105,9 @@ export default function Table({ _data }: { _data: any }) {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openCellInformationModal, setOpenCellInformationModal] =
     useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedCellData, setSelectedCellData] = useState<AssetTableObject>();
+  const [selectedCellIndex, setSelectedCellIndex] = useState<Number>();
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
   useEffect(() => {
@@ -154,30 +156,51 @@ export default function Table({ _data }: { _data: any }) {
             >
               {!cell.row.original?.confirmed &&
               cell.getValue() !== ASSET_PICK_DROP.PICKEDUP &&
-              cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF &&
-              cell.getValue() !== ASSET_PICK_DROP.AWAITING_PAYMENT ? (
-                <Text>{cell.getValue()}</Text>
+              cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
+                <>
+                  <Text>{cell.getValue()}</Text>
+                  <svg
+                    onClick={() => {
+                      console.log(cell.row.index);
+                      setSelectedCellIndex(cell.row.index);
+                      setSelectedCellData(cell.row.original);
+                      setOpenEditModal(true);
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="11.756"
+                    height="11.756"
+                    viewBox="0 0 11.756 11.756"
+                  >
+                    <path
+                      id="Icon_material-edit"
+                      data-name="Icon material-edit"
+                      d="M4.5,13.8v2.449H6.949L14.171,9.03,11.722,6.581ZM16.065,7.136a.65.65,0,0,0,0-.921L14.537,4.687a.65.65,0,0,0-.921,0l-1.2,1.2L14.87,8.331Z"
+                      transform="translate(-4.5 -4.496)"
+                      fill="var(--text200)"
+                    />
+                  </svg>
+                </>
               ) : (
-                <Text
-                  _class={
-                    cell.getValue() === ASSET_PICK_DROP.PICKEDUP ||
-                    cell.getValue() === ASSET_PICK_DROP.AWAITING_PAYMENT
-                      ? scss.pickedUpCell
-                      : scss.dropedOffCell
-                  }
-                >
-                  {cell.getValue()}
-                </Text>
+                <>
+                  <Text
+                    _class={
+                      cell.getValue() === ASSET_PICK_DROP.PICKEDUP ||
+                      cell.getValue() === ASSET_PICK_DROP.AWAITING_PAYMENT
+                        ? scss.pickedUpCell
+                        : scss.dropedOffCell
+                    }
+                  >
+                    {cell.getValue()}
+                  </Text>
+                  <FiExternalLink
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setSelectedCellData(cell.row.original);
+                      setOpenCellInformationModal(true);
+                    }}
+                  />
+                </>
               )}
-              <FiExternalLink
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  console.log("open pickup information");
-                  console.log(cell.row.original);
-                  setSelectedCellData(cell.row.original);
-                  setOpenCellInformationModal(true);
-                }}
-              />
             </Flex>
           );
         },
@@ -246,6 +269,17 @@ export default function Table({ _data }: { _data: any }) {
       },
       ...prev,
     ]);
+  };
+
+  const editRow = (data: AssetTableObject) => {
+    setData((old: any) =>
+      old.map((item: AssetTableObject, index: number) => {
+        if (index === selectedCellIndex) {
+          return data;
+        }
+        return item;
+      })
+    );
   };
 
   const save = async () => {
@@ -358,7 +392,8 @@ export default function Table({ _data }: { _data: any }) {
           </Button>
         </Flex>
       </div>
-      <AddModal
+      <RowModal
+        title="Add new row"
         open={openAddModal}
         setOpen={setOpenAddModal}
         onSubmit={({
@@ -371,7 +406,17 @@ export default function Table({ _data }: { _data: any }) {
           addNewRow({ date, status, destination, confirmed, officeNotes });
         }}
         save={() => save()}
-      ></AddModal>
+      ></RowModal>
+      <RowModal
+        title="Edit row"
+        open={openEditModal}
+        setOpen={setOpenEditModal}
+        onSubmit={(newData: AssetTableObject) => {
+          editRow(newData);
+        }}
+        save={() => save()}
+        selectedCellData={selectedCellData}
+      ></RowModal>
       <CellInformationModal
         open={openCellInformationModal}
         setOpen={setOpenCellInformationModal}
