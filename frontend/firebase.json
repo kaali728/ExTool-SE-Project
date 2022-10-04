@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "destination": "/dashboard/assets/[id]/index.html",
+        "regex": "^/dashboard/assets/([^/]+?)(?:/)?$"
+      },
+      {
+        "destination": "/dashboard/repairs/[...slug]/index.html",
+        "regex": "^/dashboard/repairs/(.+?)(?:/)?$"
+      }
+    ]
+  }
+}

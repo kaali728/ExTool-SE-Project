@@ -1,10 +1,8 @@
 import {
   Modal,
-  Input,
   Text,
   Flex,
   ImageGallery,
-  Button,
   Grid,
   CardHeader,
   Card,
@@ -12,12 +10,9 @@ import {
 } from "@findnlink/neuro-ui";
 import { getDownloadURlFromPath } from "lib/firebase";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
-import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { Toaster } from "react-hot-toast";
+import React, { useState } from "react";
 import { GrMapLocation } from "react-icons/gr";
-import { useDispatch } from "react-redux";
 import { AssetPictures, AssetTableObject } from "types/global";
 import scss from "./Table.module.scss";
 
@@ -30,10 +25,6 @@ export default function CellInformationModal({
   setOpen: (arg: boolean) => any;
   cellData: AssetTableObject;
 }) {
-  const dispatch = useDispatch();
-
-  //if (cellData === undefined) return <></>;
-
   const [images, setImages] = useState<AssetPictures>({
     front: "",
     rightSide: "",
@@ -72,10 +63,6 @@ export default function CellInformationModal({
       setAdditionalImages(addImages);
     }
   }, [cellData]);
-
-  // useEffect(() => {
-  //   console.log(additionalImages);
-  // }, [additionalImages]);
 
   return (
     <Modal
@@ -125,8 +112,8 @@ export default function CellInformationModal({
         <Text margin="xl 0 m 0" scale="s">
           Office Notes
         </Text>
-        {cellData.officeNotes?.map((officeNote: any) => (
-          <Flex flexDirection="row">
+        {cellData.officeNotes?.map((officeNote: any, index) => (
+          <Flex flexDirection="row" key={index}>
             <input type={"checkbox"} value={officeNote.checked}></input>
             <Text margin="m" weight="bold">
               {officeNote.text}

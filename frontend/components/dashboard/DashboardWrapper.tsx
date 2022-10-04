@@ -27,7 +27,7 @@ function DashboardWrapper({ children }: Props) {
       <StoreProvider disableSplashScreen defaultTheme="dark">
         <Layout type="docs">
           <Flex padding="0 xl" flexDirection="row" alignItems="center">
-            <Image src={Logo} />
+            <Image src={Logo} loader={({ src }) => src} />
           </Flex>
 
           <Navigation type="top">

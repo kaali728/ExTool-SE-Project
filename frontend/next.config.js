@@ -7,8 +7,11 @@ const nextConfig = {
     includePaths: [path.join(__dirname, "styles")],
   },
   images: {
-    domains: ["firebasestorage.googleapis.com"],
+    loader: "akamai",
+    path: "",
+    domains: ["expert-tools-ca6e9.web.app", "firebasestorage.googleapis.com"],
   },
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
