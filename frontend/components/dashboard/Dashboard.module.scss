@@ -1,5 +1,10 @@
 .sideMenu {
   background-color: var(--bg300);
+
+  .tabSelected {
+    background: var(--text400);
+  }
+
   .tab {
     display: flex !important;
     align-items: center !important;

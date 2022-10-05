@@ -233,10 +233,10 @@
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-6.3.1.tgz#1ae963dd40405450a2945408cba553e1afa3e0fb"
   integrity sha512-8YXBE2ZcU/pImVOHX7MWrSR/X5up7t6rPWZlk34RwZEcdr3ua6X+32pSd6XuOQRN+vbuvYNfA6iey8NbrjuMFQ==
 
-"@findnlink/neuro-ui@^1.0.36":
-  version "1.0.36"
-  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.36.tgz#39ddd0f959b735a483ed83ea9845ae971103388e"
-  integrity sha512-vvC7bDRgv10xuCzU8NXUjznK90qV6J1toRsz3ph2GyGRG6vuqnMdHZPLEXM90t0and1zyCoF0no8un/hi8696g==
+"@findnlink/neuro-ui@^1.0.41":
+  version "1.0.41"
+  resolved "https://registry.yarnpkg.com/@findnlink/neuro-ui/-/neuro-ui-1.0.41.tgz#15762362315d21261f997a266f81b02939d5150b"
+  integrity sha512-iJHzocl/Ys+1HElMOQfiBJNs4JoBcCgcE6mBw84mUGXzPi16LIvsB0FbGr2XE7MEKCjYHnDejvqCINj58z7kNw==
   dependencies:
     "@mdx-js/mdx" "1.6.22"
     "@mdx-js/react" "1.6.22"

@@ -30,15 +30,16 @@ function DashboardWrapper({ children }: Props) {
             <Image src={Logo} loader={({ src }) => src} />
           </Flex>
 
-          <Navigation type="top">
-            <Tabs id="navigation" hover margin="0 m 0 0">
-              <TabsHeader>
-                <Tab index={0}>
-                  <ThemeChanger />
-                </Tab>
-              </TabsHeader>
-            </Tabs>
-          </Navigation>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <ThemeChanger padding="xl" />
+          </div>
 
           <SideMenu />
           <div>

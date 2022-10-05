@@ -40,36 +40,77 @@ function SideMenu() {
 
   //TODO: Hier fix machen
 
+  console.log("router", router);
+
   return (
     <Navigation type="side" _class={styles.sideMenu}>
       <Tabs direction="column" id="navigation" hover>
         <TabsHeader padding="xl">
-          <Tab index={0} onClick={() => router.push(ASSETS)}>
+          <Tab
+            _class={
+              router.pathname === "/dashboard/assets" ||
+              router.pathname === "/dashboard/assets/[id]"
+                ? styles.tabSelected
+                : ""
+            }
+            index={0}
+            onClick={() => router.push(ASSETS)}
+          >
             <span className={styles.tab}>
               <FiGrid />
               Assets
             </span>
           </Tab>
-          <Tab index={1} onClick={() => router.push(DELIVERIES)}>
+          <Tab
+            _class={
+              router.pathname === "/dashboard/deliveries"
+                ? styles.tabSelected
+                : ""
+            }
+            index={1}
+            onClick={() => router.push(DELIVERIES)}
+          >
             <span className={styles.tab}>
               <GoLocation />
               Deliveries
             </span>
           </Tab>
-          <Tab index={2} onClick={() => router.push(REPAIRS)}>
+          <Tab
+            _class={
+              router.pathname === "/dashboard/repairs" ? styles.tabSelected : ""
+            }
+            index={2}
+            onClick={() => router.push(REPAIRS)}
+          >
             <span className={styles.tab}>
               <GoTools />
               Repairs
             </span>
           </Tab>
-          <Tab index={3} onClick={() => router.push(INVOICES)}>
+          <Tab
+            _class={
+              router.pathname === "/dashboard/invoices"
+                ? styles.tabSelected
+                : ""
+            }
+            index={3}
+            onClick={() => router.push(INVOICES)}
+          >
             <span className={styles.tab}>
               <FaFileInvoiceDollar />
               Invoices
             </span>
           </Tab>
           <Line margin={"xl"} />
-          <Tab index={4} onClick={() => router.push(SETTINGS)}>
+          <Tab
+            _class={
+              router.pathname === "/dashboard/settings"
+                ? styles.tabSelected
+                : ""
+            }
+            index={4}
+            onClick={() => router.push(SETTINGS)}
+          >
             <span className={styles.tab}>
               <FiSettings />
               Settings
