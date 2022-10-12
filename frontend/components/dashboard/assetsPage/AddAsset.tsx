@@ -6,10 +6,10 @@ import {
   Spacer,
   Text,
 } from "@findnlink/neuro-ui";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import React, { useCallback, useEffect, useState } from "react";
+import { ref } from "firebase/storage";
+import React, { useCallback, useState } from "react";
 import toast from "react-hot-toast";
-import { storage, STATE_CHANGED } from "../../../lib/firebase";
+import { storage } from "../../../lib/firebase";
 import styles from "../Dashboard.module.scss";
 import { v4 } from "uuid";
 import { createNewAsset } from "../../../lib/api";
@@ -69,7 +69,7 @@ function AddAsset({ openModal, setOpen }: Props) {
       time: 0,
       table: [
         {
-          date: new Date().toString(),
+          date: new Date().toJSON(),
           status: ASSET_PICK_DROP.ASSET_CREATED,
           destination: "",
           confirmed: false,

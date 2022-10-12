@@ -1,4 +1,4 @@
-import React, { isValidElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   createTable,
@@ -9,16 +9,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table";
-import {
-  Button,
-  DropDown,
-  Flex,
-  Icon,
-  Text,
-  Input,
-  Tag,
-} from "@findnlink/neuro-ui";
+import { Button, Flex, Text } from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
 import {
   FiArrowLeft,
@@ -26,17 +20,16 @@ import {
   FiSkipBack,
   FiSkipForward,
   FiExternalLink,
+  FiArrowUp,
+  FiArrowDown,
 } from "react-icons/fi";
-import { FaArrowLeft } from "react-icons/fa";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   replaceSelectedAssetTable,
   selectedAssetSelector,
-  updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
-import { randomUUID } from "crypto";
 import { v4 } from "uuid";
 import { AssetTableObject } from "types/global";
 import RowModal from "./RowModal";
@@ -109,6 +102,7 @@ export default function Table({ _data }: { _data: any }) {
   const [selectedCellData, setSelectedCellData] = useState<AssetTableObject>();
   const [selectedCellIndex, setSelectedCellIndex] = useState<Number>();
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
     instance.setPageSize(Number(20));
@@ -221,6 +215,11 @@ export default function Table({ _data }: { _data: any }) {
     data,
     columns,
     defaultColumn,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -327,8 +326,21 @@ export default function Table({ _data }: { _data: any }) {
                     return (
                       <th key={header.id} colSpan={header.colSpan}>
                         {header.isPlaceholder ? null : (
-                          <div>
-                            {header.renderHeader()}
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            <span className={scss.tableSortIcon}>
+                              {header.renderHeader()}
+                              {{
+                                asc: <FiArrowUp />,
+                                desc: <FiArrowDown />,
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </span>
                             {header.column.getCanFilter() ? (
                               <div>
                                 <Filter

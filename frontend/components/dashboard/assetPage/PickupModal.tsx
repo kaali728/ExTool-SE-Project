@@ -12,13 +12,11 @@ import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  assetsChanged,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage, STATE_CHANGED } from "../../../lib/firebase";
-import toast, { Toaster } from "react-hot-toast";
+
+import toast from "react-hot-toast";
 import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
@@ -177,17 +175,6 @@ export default function PickupModal({
     }
   };
 
-  function checkIfAssetImagesNull() {
-    const isNull = Object.values(assetPictures).map((value) => {
-      if (value === null) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    return isNull;
-  }
-
   function checkIfAllOfficeNotesChecked() {
     let allChecked: boolean[] = formData.officeNotes.map(
       (officeNote: OfficeNote) => {
@@ -200,11 +187,6 @@ export default function PickupModal({
   const handleSubmit = async () => {
     if (checkIfAllOfficeNotesChecked()) {
       toast.error("Accept the office note!");
-      return true;
-    }
-
-    if (checkIfAssetImagesNull().includes(true)) {
-      toast.error("Please upload all Pictures");
       return true;
     }
 
@@ -225,7 +207,6 @@ export default function PickupModal({
       return true;
     }
 
-    //TODO: Die status auf PICKED_UP setzen und die confirm auf true
     dispatch(
       updateSelectedAssetTable({
         tableContent: {
