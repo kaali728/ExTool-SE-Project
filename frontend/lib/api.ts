@@ -1,5 +1,11 @@
 import axios from "axios";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import toast from "react-hot-toast";
 import { AssetTableObject, AssetType } from "types/global";
 import { firestore } from "./firebase";
@@ -23,6 +29,28 @@ export async function createNewAsset(asset: any) {
   return asset;
 }
 
+export async function removeAsset(assetId: any) {
+  const docRef = await deleteDoc(doc(firestore, "assets", assetId));
+
+  toast.success("Asset removed successfully");
+}
+
+export async function updateAsset(
+  assetId: any,
+  data: { name: string; serialNumber: string; diesel: string; imageUrl: string }
+) {
+  const assetDoc = doc(firestore, "assets", assetId);
+
+  await updateDoc(assetDoc, {
+    name: data.name,
+    serialNumber: data.serialNumber,
+    diesel: data.diesel,
+    imageUrl: data.imageUrl,
+  });
+
+  toast.success("Asset updated successfully");
+}
+
 export async function updateTable(id: any, table: AssetTableObject[]) {
   const assetDoc = doc(firestore, "assets", id);
 
@@ -33,14 +61,13 @@ export async function updateTable(id: any, table: AssetTableObject[]) {
   toast.success("Table saved");
 }
 
-export async function updateSelectedAsset(id: any, assetData: any){
+export async function updateSelectedAsset(id: any, assetData: any) {
   const assetDoc = doc(firestore, "assets", id);
 
-  await updateDoc(assetDoc, {...assetData});
+  await updateDoc(assetDoc, { ...assetData });
 
-  toast.success("Api Fetched Data successfully saved")
+  toast.success("Api Fetched Data successfully saved");
 }
-
 
 export async function getAssetStatusAirFleet(serialNumber: string) {
   try {

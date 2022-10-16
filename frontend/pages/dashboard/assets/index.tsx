@@ -1,16 +1,14 @@
 import {
   Button,
   Card,
-  CardContent,
   CardHeader,
   Flex,
   Grid,
-  Input,
-  Line,
   Spacer,
   Tag,
   Text,
   Image,
+  Modal,
 } from "@findnlink/neuro-ui";
 import React, { useEffect, useState } from "react";
 import AssetsSearch from "components/dashboard/assetsPage/AssetsSearch";
@@ -30,15 +28,27 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import { ASSETS } from "lib/constants/routes";
 import { AssetType } from "types/global";
+import { MdDelete, MdEdit } from "react-icons/md";
+import { removeAsset } from "lib/api";
 
 function Assets() {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
+  const [openRemoveModal, setOpenRemoveModal] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
   const assets = useSelector(selectAssets);
   const filteredAsset = useSelector(selectAssetFilter);
   const assetsStateChanged = useSelector(assetsChanged);
   const router = useRouter();
   const [showingAsset, setShowingAsset] = useState<AssetType[]>([]);
+  const [editData, setEditData] = useState({
+    name: "",
+    serialNumber: "",
+    diesel: "",
+    imageUrl: "",
+    assetId: "",
+  });
+  const [isEdit, setIsEdit] = useState(false);
 
   useEffect((): any => {
     let isSubscribed = true;
@@ -87,10 +97,16 @@ function Assets() {
         <Flex style={{ padding: "3.5rem 0px" }}>
           <Flex flexDirection="row" alignItems="center" flexWrap="wrap">
             <AssetsSearch></AssetsSearch>
-            <Button scale="l" primary onClick={() => setOpenModal(true)}>
+            <Button
+              scale="l"
+              primary
+              onClick={() => {
+                setIsEdit(false);
+                setOpenModal(true);
+              }}
+            >
               Add Asset
             </Button>
-            <AddAsset openModal={openModal} setOpen={setOpenModal} />
           </Flex>
           <Spacer />
           <Grid _class={scss.assetsGrid}>
@@ -106,9 +122,53 @@ function Assets() {
               >
                 <Image src={item.imageUrl} />
                 <CardHeader padding="0" margin="0">
-                  <Text scale="xl" weight="bold" margin="xl m m m">
-                    {item.name}
-                  </Text>
+                  <Flex
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Text scale="xl" weight="bold" margin="xl m m m">
+                      {item.name}
+                    </Text>
+                    <Flex flexDirection="row">
+                      <Text
+                        scale="xl"
+                        weight="bold"
+                        margin="xl s m m"
+                        padding="0 0 0 m"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setSelectedId(item.id);
+                          setIsEdit(true);
+                          setEditData({
+                            name: item.name,
+                            serialNumber: item.serialNumber,
+                            imageUrl: item.imageUrl,
+                            diesel: item.diesel,
+                            assetId: item.id,
+                          });
+                          console.log("item.imageUrl", item.imageUrl);
+                          setOpenModal(true);
+                        }}
+                      >
+                        <MdEdit />
+                      </Text>
+                      <Text
+                        scale="xl"
+                        weight="bold"
+                        margin="xl 0 m 0"
+                        padding="0 0 0 m"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setSelectedId(item.id);
+                          setOpenRemoveModal(true);
+                        }}
+                      >
+                        <MdDelete />
+                      </Text>
+                    </Flex>
+                  </Flex>
+
                   <Tag>
                     {[
                       <Flex alignItems="center" flexDirection="row" key={1}>
@@ -218,6 +278,24 @@ function Assets() {
             ))}
           </Grid>
         </Flex>
+        <AddAsset
+          openModal={openModal}
+          selectedId={selectedId}
+          setOpen={setOpenModal}
+          editData={editData}
+          isEdit={isEdit}
+        />
+        <Modal
+          type="confirm"
+          open={openRemoveModal}
+          onConfirm={() => {
+            setOpenRemoveModal(false);
+            removeAsset(selectedId);
+          }}
+          onClose={() => setOpenRemoveModal(false)}
+        >
+          <Text>Warning: Are you sure you want to delete this assest?</Text>
+        </Modal>
       </>
     </Flex>
   );
