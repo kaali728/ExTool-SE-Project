@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   addDoc,
   collection,
@@ -7,9 +6,8 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import toast from "react-hot-toast";
-import { AssetTableObject, AssetType } from "types/global";
+import { AssetTableObject } from "types/global";
 import { firestore } from "./firebase";
-import { ENGINE } from "./models/assetEnum";
 
 export async function createNewAsset(asset: any) {
   const docRef = await addDoc(collection(firestore, "assets"), {
@@ -51,7 +49,7 @@ export async function updateAsset(
   toast.success("Asset updated successfully");
 }
 
-export async function updateTable(id: any, table: AssetTableObject[]) {
+export async function updateTable(id: any, table: AssetTableObject[]) {  
   const assetDoc = doc(firestore, "assets", id);
 
   await updateDoc(assetDoc, {

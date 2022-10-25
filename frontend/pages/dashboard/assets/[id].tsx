@@ -23,13 +23,11 @@ import scss from "components/dashboard/Dashboard.module.scss";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { ASSET_PICK_DROP, ENGINE } from "lib/models/assetEnum";
 
-import { useDropzone } from "react-dropzone";
 import PickupModal from "src/components/dashboard/assetPage/PickupModal";
 import DropoffModal from "src/components/dashboard/assetPage/DropoffModal";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedAssetSelector, setSelectedAsset } from "lib/slices/assetSlice";
 import { getAssetStatusAirFleet, updateSelectedAsset } from "lib/api";
-import useAsyncEffect from "lib/hooks/useAsyncEffect";
 
 export default function Asset() {
   const dispatch = useDispatch();
@@ -138,7 +136,7 @@ export default function Asset() {
           lat: status.latitude,
         },
         engine: isEngineStopped(status.voltage),
-        machineHours: status.engineHours,
+        machineHours: Math.round(status.engineHours / 3600),
       });
     }
 
@@ -146,12 +144,13 @@ export default function Asset() {
       setSelectedAsset({
         asset: {
           ...assetEdited,
+          id: id,
           location: {
             long: status.longitude,
             lat: status.latitude,
           },
           engine: isEngineStopped(status.voltage),
-          machineHours: status.engineHours || 0,
+          machineHours: Math.round(status.engineHours / 3600) || 0,
         },
       })
     );
