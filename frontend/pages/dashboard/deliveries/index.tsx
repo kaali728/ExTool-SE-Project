@@ -27,7 +27,7 @@ import { ASSET_PICK_DROP } from "lib/models/assetEnum";
 
 type Props = {};
 
-function index({}: Props) {
+function Index({}: Props) {
   const router = useRouter();
   const assets = useSelector(selectAssets);
   const dispatch = useDispatch();
@@ -117,14 +117,14 @@ function index({}: Props) {
         <Line />
 
         <Text style={{ fontSize: "20px" }} weight="bold">
-          Next pick up's
+          Next pick up&apos;s
         </Text>
 
         {getNextDeliveries(ASSET_PICK_DROP.PICKUP)}
 
         <Line />
         <Text style={{ fontSize: "20px" }} weight="bold">
-          Next drop off's
+          Next drop off&apos;s
         </Text>
 
         {getNextDeliveries(ASSET_PICK_DROP.DROP_OFF)}
@@ -133,4 +133,4 @@ function index({}: Props) {
   );
 }
 
-export default index;
+export default Index;
