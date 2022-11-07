@@ -7,6 +7,7 @@ import {
   Grid,
   Line,
   Image,
+  Tag,
 } from "@findnlink/neuro-ui";
 import React, { useEffect } from "react";
 import scss from "components/dashboard/Dashboard.module.scss";
@@ -24,6 +25,9 @@ import toast from "react-hot-toast";
 import { getDocs, collection } from "firebase/firestore";
 import { firestore } from "lib/firebase";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
+import { CallTracker } from "assert";
+import { IoMdCalendar, IoMdClock } from "react-icons/io";
+import moment from "moment";
 
 type Props = {};
 
@@ -73,7 +77,12 @@ function Index({}: Props) {
           return asset;
         }
       })
-      .filter((i) => i);
+      .filter((i) => i)
+      .sort((a, b) => {
+        var dateA = new Date(a!.table[0].date).getTime();
+        var dateB = new Date(b!.table[0].date).getTime();
+        return dateA > dateB ? 1 : -1;
+      });
 
     console.log("nextDeliveries", nextDeliveries);
 
@@ -96,9 +105,56 @@ function Index({}: Props) {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Text scale="xl" weight="bold" margin="xl m m m">
+                <Text scale="xl" weight="bold" margin="xl m m s">
                   {item.name}
                 </Text>
+              </Flex>
+              <Flex flexDirection="row">
+                <Tag margin="0">
+                  {[
+                    <Flex alignItems="center" flexDirection="row" key={1}>
+                      <IoMdClock style={{ color: "var(--text100)" }} />
+                      <Text
+                        style={{ color: "var(--text100)" }}
+                        padding="0 0 0 s"
+                        margin="0"
+                      >
+                        {
+                          item.table
+                            .map((tableItem: any) => {
+                              if (tableItem.status === type)
+                                return moment(tableItem.date).fromNow();
+                            })
+                            .filter((i: any) => i)[0]
+                        }
+                      </Text>
+                    </Flex>,
+                  ]}
+                </Tag>
+                <Tag margin="0">
+                  {[
+                    <Flex alignItems="center" flexDirection="row" key={1}>
+                      <IoMdCalendar style={{ color: "var(--text100)" }} />
+                      <Text
+                        padding="0 0 0 s"
+                        margin="0"
+                        style={{ color: "var(--text100)" }}
+                      >
+                        {
+                          item.table
+                            .map((tableItem: any) => {
+                              if (tableItem.status === type) {
+                                return moment(tableItem.date).format(
+                                  "MMMM Do YYYY, h:mm:ss a"
+                                );
+                              }
+                            })
+                            .filter((i: any) => i)[0]
+                        }
+                      </Text>
+                    </Flex>,
+                  ]}
+                </Tag>
               </Flex>
             </CardHeader>
           </Card>

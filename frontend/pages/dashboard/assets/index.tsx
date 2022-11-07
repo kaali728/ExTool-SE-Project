@@ -147,7 +147,6 @@ function Assets() {
                             diesel: item.diesel,
                             assetId: item.id,
                           });
-                          console.log("item.imageUrl", item.imageUrl);
                           setOpenModal(true);
                         }}
                       >
@@ -168,111 +167,6 @@ function Assets() {
                       </Text>
                     </Flex>
                   </Flex>
-
-                  <Tag>
-                    {[
-                      <Flex alignItems="center" flexDirection="row" key={1}>
-                        <svg
-                          id="Component_34_8"
-                          data-name="Component 34 – 8"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="15"
-                          height="15"
-                          viewBox="0 0 15 15"
-                        >
-                          <g id="Component_33_20" data-name="Component 33 – 20">
-                            <rect
-                              id="Rectangle_6659"
-                              data-name="Rectangle 6659"
-                              width="15"
-                              height="15"
-                              fill="none"
-                            />
-                          </g>
-                          <g
-                            id="Icon_feather-clock"
-                            data-name="Icon feather-clock"
-                            transform="translate(-2 -2)"
-                          >
-                            <path
-                              id="Path_1179"
-                              data-name="Path 1179"
-                              d="M15.971,9.486A6.486,6.486,0,1,1,9.486,3,6.486,6.486,0,0,1,15.971,9.486Z"
-                              fill="none"
-                              stroke="var(--text200)"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                            />
-                            <path
-                              id="Path_1180"
-                              data-name="Path 1180"
-                              d="M18,9v3.891l2.594,1.3"
-                              transform="translate(-8.514 -3.406)"
-                              fill="none"
-                              stroke="var(--text200)"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                            />
-                          </g>
-                        </svg>
-                        <Text padding="0 0 0 s" margin="0">
-                          {item.time}
-                        </Text>
-                      </Flex>,
-                      <Flex alignItems="center" flexDirection="row" key={2}>
-                        <svg
-                          id="Component_35_5"
-                          data-name="Component 35 – 5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="15"
-                          height="15"
-                          viewBox="0 0 15 15"
-                        >
-                          <g id="Component_34_9" data-name="Component 34 – 9">
-                            <g
-                              id="Component_33_20"
-                              data-name="Component 33 – 20"
-                            >
-                              <rect
-                                id="Rectangle_6659"
-                                data-name="Rectangle 6659"
-                                width="15"
-                                height="15"
-                                fill="none"
-                              />
-                            </g>
-                          </g>
-                          <line
-                            id="Line_1057"
-                            data-name="Line 1057"
-                            x2="3.052"
-                            y2="3.446"
-                            transform="translate(2.947 8.036)"
-                            fill="none"
-                            stroke="var(--text200)"
-                            strokeLinecap="round"
-                            strokeWidth="2.5"
-                          />
-                          <line
-                            id="Line_1058"
-                            data-name="Line 1058"
-                            x1="6.452"
-                            y2="7.039"
-                            transform="translate(5.999 4.442)"
-                            fill="none"
-                            stroke="var(--text200)"
-                            strokeLinecap="round"
-                            strokeWidth="2.5"
-                          />
-                        </svg>
-                        <Text padding="0 0 0 s" margin="0">
-                          {item.status}
-                        </Text>
-                      </Flex>,
-                    ]}
-                  </Tag>
                 </CardHeader>
               </Card>
             ))}
