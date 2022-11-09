@@ -62,6 +62,7 @@ export const assetSlice = createSlice({
           officeNotes: OfficeNote[];
           report: string;
           confirmed: boolean;
+          confirmedDate: string;
         };
       }>
     ) {
@@ -75,7 +76,7 @@ export const assetSlice = createSlice({
           element.destination === action.payload.tableContent.destination &&
           element.date === action.payload.tableContent.date
       );
-
+      
       state.content.selectedAsset.table[index].status =
         action.payload.tableContent.status;
       state.content.selectedAsset.table[index].images =
@@ -92,6 +93,8 @@ export const assetSlice = createSlice({
         action.payload.tableContent.report;
       state.content.selectedAsset.table[index].confirmed =
         action.payload.tableContent.confirmed;
+      state.content.selectedAsset.table[index].confirmedDate =
+        action.payload.tableContent.confirmedDate;
     },
     replaceSelectedAssetTable(
       state,

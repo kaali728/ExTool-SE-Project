@@ -220,6 +220,7 @@ export default function PickupModal({
           officeNotes: formData.officeNotes,
           report: formData.report,
           confirmed: true,
+          confirmedDate: new Date().toISOString(),
         },
       })
     );

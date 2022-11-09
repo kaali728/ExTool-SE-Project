@@ -20,6 +20,7 @@ export type AssetTableObject = {
     | ASSET_PICK_DROP.PICKEDUP
     | ASSET_PICK_DROP.PICKUP;
   confirmed: boolean;
+  confirmedDate?: string;
   report?: string;
   officeNotes?: OfficeNote[];
   hours?: number;

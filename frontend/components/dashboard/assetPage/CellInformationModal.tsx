@@ -64,6 +64,13 @@ export default function CellInformationModal({
     }
   }, [cellData]);
 
+  function getDateFormat(date: string | undefined): Date {
+    if (date) {
+      return new Date(date);
+    }
+    return new Date();
+  }
+
   return (
     <Modal
       open={open}
@@ -93,6 +100,13 @@ export default function CellInformationModal({
           Date
         </Text>
         <Text weight="bold">{cellData.date}</Text>
+
+        <Text margin="xl 0 m 0" scale="s">
+          {cellData.status + " date"}
+        </Text>
+        <Text weight="bold">
+          {getDateFormat(cellData.confirmedDate).toUTCString()}
+        </Text>
 
         <Text margin="xl 0 m 0" scale="s">
           Report
