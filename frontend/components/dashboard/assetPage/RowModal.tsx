@@ -1,23 +1,10 @@
-import {
-  Modal,
-  Image,
-  Input,
-  Text,
-  Flex,
-  ImageGallery,
-  Icon,
-  Button,
-  TextArea,
-  DropDown,
-} from "@findnlink/neuro-ui";
+import { Modal, Input, Text, Flex, Button } from "@findnlink/neuro-ui";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import toast, { Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
-import { GrMapLocation } from "react-icons/gr";
-import scss from "./PickupDropoff.module.scss";
 import autoAnimate from "@formkit/auto-animate";
-import { AssetTableObject } from "types/global";
+import { AssetTableObject, OfficeNote } from "types/global";
 
 export default function RowModal({
   open,
@@ -34,7 +21,6 @@ export default function RowModal({
   title: string;
   selectedCellData?: AssetTableObject;
 }) {
-  const dispatch = useDispatch();
   const officeNotesRef = useRef(null);
   const [toggleSave, setToggleSave] = useState<boolean>(false);
 
@@ -45,11 +31,18 @@ export default function RowModal({
     }
   }, [toggleSave]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    destination: string;
+    date: string;
+    report: string;
+    officeNotes: OfficeNote[];
+    confirmed: boolean;
+    status: string;
+  }>({
     destination: "",
     date: "",
     report: "",
-    officeNotes: [{ text: "", checked: false }],
+    officeNotes: [],
     confirmed: false,
     status: "",
   });

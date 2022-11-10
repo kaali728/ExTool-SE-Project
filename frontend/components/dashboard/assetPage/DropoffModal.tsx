@@ -6,20 +6,17 @@ import {
   Flex,
   ImageGallery,
   Icon,
-  Spacer,
 } from "@findnlink/neuro-ui";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { updateTable } from "lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  assetsChanged,
   selectedAssetSelector,
   updateSelectedAssetTable,
 } from "lib/slices/assetSlice";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { storage, STATE_CHANGED } from "../../../lib/firebase";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { GrMapLocation } from "react-icons/gr";
 import { v4 } from "uuid";
 import useAsyncEffect from "lib/hooks/useAsyncEffect";
 import { ASSET_PICK_DROP } from "lib/models/assetEnum";
@@ -29,6 +26,7 @@ import {
   AssetTableObject,
   OfficeNote,
 } from "types/global";
+import scss from "./PickupDropoff.module.scss";
 
 export default function DropoffModal({
   open,
@@ -182,17 +180,6 @@ export default function DropoffModal({
     }
   };
 
-  function checkIfAssetImagesNull() {
-    const isNull = Object.values(assetPictures).map((value) => {
-      if (value === null) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    return isNull;
-  }
-
   function checkIfAllOfficeNotesChecked() {
     let allChecked: boolean[] = formData.officeNotes.map(
       (officeNote: OfficeNote) => {
@@ -204,11 +191,6 @@ export default function DropoffModal({
   const handleSubmit = async () => {
     if (checkIfAllOfficeNotesChecked()) {
       toast.error("Accept the office note!");
-      return true;
-    }
-
-    if (checkIfAssetImagesNull().includes(true)) {
-      toast.error("Please upload all Pictures");
       return true;
     }
 
@@ -342,6 +324,14 @@ export default function DropoffModal({
           Address
         </Text>
         <Text weight="bold">{formData.destination}</Text>
+        <Text href={`https://maps.google.com/?q=${formData.destination}`}>
+          <Flex flexDirection="row" alignItems="center">
+            <GrMapLocation className={scss.icon} />
+            <Text margin="0 0 0 m" padding="0">
+              Open map
+            </Text>
+          </Flex>
+        </Text>
         <Text margin="xl 0 m 0" scale="s">
           Date
         </Text>
