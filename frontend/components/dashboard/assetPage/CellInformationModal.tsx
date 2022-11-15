@@ -147,7 +147,7 @@ export default function CellInformationModal({
                 <Card pointer margin="0">
                   <CardHeader margin="0">
                     <a
-                      href={images.hoursReading as string}
+                      href={images.front as string}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -167,7 +167,7 @@ export default function CellInformationModal({
                 <Card pointer margin="0">
                   <CardHeader margin="0">
                     <a
-                      href={images.hoursReading as string}
+                      href={images.back as string}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -187,7 +187,7 @@ export default function CellInformationModal({
                 <Card pointer margin="0">
                   <CardHeader margin="0">
                     <a
-                      href={images.hoursReading as string}
+                      href={images.rightSide as string}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -207,7 +207,7 @@ export default function CellInformationModal({
                 <Card pointer margin="0">
                   <CardHeader margin="0">
                     <a
-                      href={images.hoursReading as string}
+                      href={images.leftSide as string}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -247,7 +247,7 @@ export default function CellInformationModal({
                 <Card pointer margin="0">
                   <CardHeader margin="0">
                     <a
-                      href={images.hoursReading as string}
+                      href={images.fuelGuage as string}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
