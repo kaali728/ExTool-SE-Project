@@ -76,15 +76,17 @@ function Assets() {
 
   useEffect(() => {
     if (filteredAsset.length > 0) {
-      setShowingAsset(filteredAsset);
+      setShowingAsset(sortAssetsArray(filteredAsset));
     } else {
-      setShowingAsset(assets);
+      setShowingAsset(sortAssetsArray(assets));
     }
   }, [filteredAsset, assets]);
 
-  // useEffect(() => {
-  //   console.log(assets);
-  // }, [assets]);
+  function sortAssetsArray(assets: AssetType[]): AssetType[] {
+    const sortedAssets = [...assets];
+    sortedAssets.sort((a, b) => (a.name > b.name ? 1 : -1));
+    return sortedAssets;
+  }
 
   return (
     <Flex padding="xl">
