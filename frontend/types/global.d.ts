@@ -27,6 +27,7 @@ export type AssetTableObject = {
   diesel?: number;
   images?: AssetPictureDownloadUrl;
   additionalImages?: string[];
+  id?: string;
 };
 
 export type OfficeNote = {

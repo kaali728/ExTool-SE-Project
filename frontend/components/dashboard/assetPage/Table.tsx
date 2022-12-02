@@ -12,7 +12,7 @@ import {
   SortingState,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { Button, Flex, Text } from "@findnlink/neuro-ui";
+import { Button, Flex, Modal, Text } from "@findnlink/neuro-ui";
 import scss from "./Table.module.scss";
 import {
   FiArrowLeft,
@@ -34,6 +34,8 @@ import { v4 } from "uuid";
 import { AssetTableObject } from "types/global";
 import RowModal from "./RowModal";
 import CellInformationModal from "./CellInformationModal";
+import RemoveRowModal from "./RemoveRowModal";
+import { MdDelete } from "react-icons/md";
 
 let table = createTable()
   .setRowType<AssetTableObject>()
@@ -99,6 +101,7 @@ export default function Table({ _data }: { _data: any }) {
   const [openCellInformationModal, setOpenCellInformationModal] =
     useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openRemoveModal, setOpenRemoveModal] = useState(false);
   const [selectedCellData, setSelectedCellData] = useState<AssetTableObject>();
   const [selectedCellIndex, setSelectedCellIndex] = useState<Number>();
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
@@ -153,26 +156,38 @@ export default function Table({ _data }: { _data: any }) {
               cell.getValue() !== ASSET_PICK_DROP.DROPEDOFF ? (
                 <>
                   <Text>{cell.getValue()}</Text>
-                  <svg
-                    onClick={() => {
-                      console.log(cell.row.index);
-                      setSelectedCellIndex(cell.row.index);
-                      setSelectedCellData(cell.row.original);
-                      setOpenEditModal(true);
-                    }}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="11.756"
-                    height="11.756"
-                    viewBox="0 0 11.756 11.756"
-                  >
-                    <path
-                      id="Icon_material-edit"
-                      data-name="Icon material-edit"
-                      d="M4.5,13.8v2.449H6.949L14.171,9.03,11.722,6.581ZM16.065,7.136a.65.65,0,0,0,0-.921L14.537,4.687a.65.65,0,0,0-.921,0l-1.2,1.2L14.87,8.331Z"
-                      transform="translate(-4.5 -4.496)"
-                      fill="var(--text200)"
-                    />
-                  </svg>
+                  <Flex flexDirection="row" alignItems="center">
+                    <svg
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        console.log(cell.row.index);
+                        setSelectedCellIndex(cell.row.index);
+                        setSelectedCellData(cell.row.original);
+                        setOpenEditModal(true);
+                      }}
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="11.756"
+                      height="11.756"
+                      viewBox="0 0 11.756 11.756"
+                    >
+                      <path
+                        id="Icon_material-edit"
+                        data-name="Icon material-edit"
+                        d="M4.5,13.8v2.449H6.949L14.171,9.03,11.722,6.581ZM16.065,7.136a.65.65,0,0,0,0-.921L14.537,4.687a.65.65,0,0,0-.921,0l-1.2,1.2L14.87,8.331Z"
+                        transform="translate(-4.5 -4.496)"
+                        fill="var(--text200)"
+                      />
+                    </svg>
+
+                    <MdDelete
+                      style={{ marginLeft: "5px", cursor: "pointer" }}
+                      onClick={() => {
+                        setSelectedCellIndex(cell.row.index);
+                        setSelectedCellData(cell.row.original);
+                        setOpenRemoveModal(true);
+                      }}
+                    ></MdDelete>
+                  </Flex>
                 </>
               ) : (
                 <>
@@ -250,6 +265,13 @@ export default function Table({ _data }: { _data: any }) {
     setData(selectedAsset?.table);
   }, [selectedAsset]);
 
+  const removeRow = () => {
+    console.log("selectedCellData", selectedCellData, selectedCellIndex);
+    setData((prev: any) => [
+      ...prev.filter((cell: any, index: number) => index !== selectedCellIndex),
+    ]);
+  };
+
   const addNewRow = ({
     date,
     status,
@@ -283,6 +305,7 @@ export default function Table({ _data }: { _data: any }) {
 
   const save = async () => {
     await updateTable(_data.id, data);
+    console.log("data", data);
     dispatch(replaceSelectedAssetTable({ table: data }));
     setShowSaveButton(false);
   };
@@ -429,6 +452,16 @@ export default function Table({ _data }: { _data: any }) {
         save={() => save()}
         selectedCellData={selectedCellData}
       ></RowModal>
+      <RemoveRowModal
+        title="Remove this row?"
+        open={openRemoveModal}
+        setOpen={setOpenRemoveModal}
+        onSubmit={() => {
+          removeRow();
+        }}
+        save={() => save()}
+        selectedCellData={selectedCellData}
+      ></RemoveRowModal>
       {selectedCellData && (
         <CellInformationModal
           open={openCellInformationModal}

@@ -36,7 +36,11 @@ export default function Overview() {
             Current Location:
           </Flex>
         </Text>
-        <Text>{address}</Text>
+        <Text
+          href={`https://maps.google.com/?q=${data?.location.lat},${data?.location.long}`}
+        >
+          {address}
+        </Text>
         <Spacer />
 
         <Text weight="bold">

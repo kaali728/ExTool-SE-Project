@@ -136,7 +136,7 @@ export default function Asset() {
           lat: status.latitude,
         },
         engine: isEngineStopped(status.voltage),
-        machineHours: Math.round(status.engineHours / 3600),
+        machineHours: status.engineHours / 3600,
       });
     }
 
@@ -150,7 +150,7 @@ export default function Asset() {
             lat: status.latitude,
           },
           engine: isEngineStopped(status.voltage),
-          machineHours: Math.round(status.engineHours / 3600) || 0,
+          machineHours: status.engineHours ? status.engineHours / 3600 : 0,
         },
       })
     );
@@ -198,26 +198,28 @@ export default function Asset() {
             <Text weight="light">S/N: {data.serialNumber}</Text>
           </div>
           <div>
-            <Button
-              onClick={() => {
-                setOpenPickup(true);
-              }}
-              scale="l"
-              primary
-              disabled={buttonsDisabled.pickup}
-            >
-              Pick up
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenDropoff(true);
-              }}
-              scale="l"
-              margin="m 0 m m"
-              disabled={buttonsDisabled.dropoff}
-            >
-              Drop off
-            </Button>
+            {!buttonsDisabled.pickup && (
+              <Button
+                onClick={() => {
+                  setOpenPickup(true);
+                }}
+                scale="l"
+                primary
+              >
+                Pick up
+              </Button>
+            )}
+            {!buttonsDisabled.dropoff && (
+              <Button
+                onClick={() => {
+                  setOpenDropoff(true);
+                }}
+                scale="l"
+                margin="m 0 m m"
+              >
+                Drop off
+              </Button>
+            )}
           </div>
         </Flex>
 
